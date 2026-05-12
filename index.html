@@ -3,7 +3,7 @@
 
 <head>
     <meta content="ru" http-equiv="content-language">
-    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" name="viewport">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <link href="https://static.static-food-2.ru/_next/static/d27fc1cd/manifest.json" rel="manifest">
     <link href="https://food.ru/menu-na-nedelu" rel="canonical">
     <meta content="https://static.static-food-2.ru/_next/static/media/socials-cover.c5f4f742.webp" property="og:image">
@@ -1145,11 +1145,11 @@
                     <div class="sl_drawer" id="slDrawer">
                         <div class="sl_header">
                             <div>
-                                <h2 style="margin:0; font-size: 20px;">Список покупок</h2>
+                                <h2 style="margin:0; font-size: 20px;">Корзина по рецептам</h2>
                             </div>
                             <div id="closeSl" style="cursor:pointer; font-size:24px;">✕</div>
                         </div>
-                        <div class="sl_content">
+                        <div class="sl_content" id="slContent">
                             <!-- Мясо и птица -->
                             <h3 style="font-size: 14px; color: #666; margin: 0 0 8px 0; text-transform: uppercase;">Мясо
                                 и птица</h3>
@@ -1517,7 +1517,25 @@
                                     <p>На основе ваших предпочтений. Можно уточнить в любой момент.</p>
                                 </div>
                             </div>
-                            <button class="gm_info_btn" id="openSettingsBtn">Настроить</button>
+                        </div>
+
+                        <div class="gm_save_prefs_box" id="gmSavePrefsBox" style="display: none;">
+                            <div class="gm_save_prefs_icon">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                    <polyline points="7 3 7 8 15 8"></polyline>
+                                </svg>
+                            </div>
+                            <div class="gm_save_prefs_content">
+                                <div class="gm_save_prefs_title">Пока сохранено на этом устройстве</div>
+                                <p class="gm_save_prefs_desc">Войдите, чтобы не потерять предпочтения и использовать их в следующем меню.</p>
+                            </div>
+                            <div class="gm_save_prefs_actions">
+                                <button class="gm_save_prefs_primary" id="savePrefsLoginBtn" type="button">Сохранить в профиле</button>
+                                <button class="gm_save_prefs_secondary" id="savePrefsLaterBtn" type="button">Позже</button>
+                            </div>
                         </div>
 
                         <!-- Блок МИНИ-ОПРОСА (Показывается неавторизованным/непрошедшим) -->
@@ -1549,27 +1567,44 @@
                         </div>
 
                         <!-- Presets -->
-                        <div class="gm_presets_wrapper">
-                            <button class="gm_preset_btn foryou" id="gmPresetForYou" style="display: none;">
-                                ✨ Для Вас
-                            </button>
-                            <button class="gm_preset_btn active">
-                                ⚖️ Сбалансированное
-                            </button>
-                            <button class="gm_preset_btn">
-                                💪 Спортивное
-                            </button>
-                            <button class="gm_preset_btn">
-                                🥦 Вегетарианское
-                            </button>
-                            <button class="gm_preset_btn">
-                                👨‍👩‍👧‍👦 Для семьи
-                            </button>
-                            <button class="gm_preset_btn">
-                                👛 Бюджетное
-                            </button>
-                            <button class="gm_preset_btn">
-                                ⏱️ Быстрое
+                        <div class="gm_presets_row">
+                            <div class="gm_presets_wrapper">
+                                <button class="gm_preset_btn foryou" id="gmPresetForYou" style="display: none;">
+                                    ✨ Для Вас
+                                </button>
+                                <button class="gm_preset_btn active">
+                                    ⚖️ Сбалансированное
+                                </button>
+                                <button class="gm_preset_btn">
+                                    💪 Спортивное
+                                </button>
+                                <button class="gm_preset_btn">
+                                    🥦 Вегетарианское
+                                </button>
+                                <button class="gm_preset_btn">
+                                    👨‍👩‍👧‍👦 Для семьи
+                                </button>
+                                <button class="gm_preset_btn">
+                                    👛 Бюджетное
+                                </button>
+                                <button class="gm_preset_btn">
+                                    ⏱️ Быстрое
+                                </button>
+                            </div>
+                            <button class="gm_preset_settings_btn" id="openSettingsBtn" type="button" aria-label="Настроить меню">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <line x1="4" y1="21" x2="4" y2="14"></line>
+                                    <line x1="4" y1="10" x2="4" y2="3"></line>
+                                    <line x1="12" y1="21" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12" y2="3"></line>
+                                    <line x1="20" y1="21" x2="20" y2="16"></line>
+                                    <line x1="20" y1="12" x2="20" y2="3"></line>
+                                    <line x1="1" y1="14" x2="7" y2="14"></line>
+                                    <line x1="9" y1="8" x2="15" y2="8"></line>
+                                    <line x1="17" y1="16" x2="23" y2="16"></line>
+                                </svg>
+                                <span>Настроить</span>
                             </button>
                         </div>
 
@@ -2102,7 +2137,6 @@
                         <div class="sm_header">
                             <div class="sm_title">Настройки меню</div>
                             <div class="sm_header_actions">
-                                <div class="sm_status">Сохранено</div>
                                 <button class="sm_close_btn" id="closeSettingsBtn" type="button" aria-label="Закрыть настройки">×</button>
                             </div>
                         </div>
@@ -2115,7 +2149,6 @@
                                 <div class="chart_tab_btn" data-tab="calories">🔥 Калории</div>
                                 <div class="chart_tab_btn" data-tab="protein">🥩 Белок</div>
                                 <div class="chart_tab_btn" data-tab="time">⏱️ Время</div>
-                                <div class="chart_tab_btn" data-tab="delivery">🚚 Доставка</div>
                             </div>
 
                             <div class="sm_chart_container" id="smChartContainer">
@@ -2129,7 +2162,7 @@
 
                             <div class="sm_chart_total">
                                 <span class="total_label" id="smChartTotalLabel">Итого за неделю</span>
-                                <span class="total_value" id="smChartTotalValue">5 500 ₽</span>
+                                <span class="total_value" id="smChartTotalValue">4 250 ₽</span>
                             </div>
                         </div>
 
@@ -2154,17 +2187,18 @@
                             <!-- По дефолту пусто -->
                         </div>
                         <div class="sm_stop_input_row">
-                            <input type="text" class="sm_stop_input" placeholder="Введите ингредиент...">
+                            <input type="text" class="sm_stop_input" placeholder="Введите аллерген или ингредиент...">
                             <button class="sm_stop_add_btn">+</button>
                         </div>
+                        <div class="sm_stop_suggestions" id="smStopSuggestions"></div>
                         <div class="sm_stop_hint" id="smStopHint">Введите ингредиент и нажмите «+» или Enter.</div>
 
                         <div class="sm_section_title">Приёмов в день</div>
-                        <div class="sm_btn_row">
-                            <button class="sm_simple_btn sm_simple_btn_js">1</button>
-                            <button class="sm_simple_btn sm_simple_btn_js">2</button>
-                            <button class="sm_simple_btn sm_simple_btn_js active">3</button>
-                            <button class="sm_simple_btn sm_simple_btn_js">4</button>
+                        <div class="sm_btn_row" data-setting="meals">
+                            <button class="sm_simple_btn sm_simple_btn_js" data-value="1">1</button>
+                            <button class="sm_simple_btn sm_simple_btn_js" data-value="2">2</button>
+                            <button class="sm_simple_btn sm_simple_btn_js active" data-value="3">3</button>
+                            <button class="sm_simple_btn sm_simple_btn_js" data-value="4">4</button>
                             <label class="sm_custom_count">
                                 <span>Свое</span>
                                 <input type="number" min="5" max="12" step="1" inputmode="numeric" placeholder="5">
@@ -2176,10 +2210,11 @@
                         </div>
 
                         <div class="sm_section_title">Порций</div>
-                        <div class="sm_btn_row">
-                            <button class="sm_simple_btn sm_simple_btn_js">1</button>
-                            <button class="sm_simple_btn sm_simple_btn_js">2</button>
-                            <button class="sm_simple_btn sm_simple_btn_js active">4</button>
+                        <div class="sm_btn_row" data-setting="portions">
+                            <button class="sm_simple_btn sm_simple_btn_js" data-value="1">1</button>
+                            <button class="sm_simple_btn sm_simple_btn_js" data-value="2">2</button>
+                            <button class="sm_simple_btn sm_simple_btn_js" data-value="3">3</button>
+                            <button class="sm_simple_btn sm_simple_btn_js active" data-value="4">4</button>
                             <label class="sm_custom_count">
                                 <span>Свое</span>
                                 <input type="number" min="5" max="20" step="1" inputmode="numeric" placeholder="5">
@@ -2203,6 +2238,7 @@
             </div>
         </div>
     </div>
+    <script src="recipes.js"></script>
     <script src="app.js"></script>
 
 
