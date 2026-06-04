@@ -941,6 +941,10 @@
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
             transition: all 0.2s;
         }
 
@@ -1103,6 +1107,64 @@
             font-weight: 500;
             color: #666;
             padding-top: 16px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gm_day_text {
+            line-height: 1;
+        }
+
+        .gm_day_off_btn {
+            width: 28px;
+            height: 28px;
+            border: 1px solid #E3E3E3;
+            border-radius: 50%;
+            background: #fff;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .gm_day_off_btn:hover {
+            background: #FFF3F2;
+            border-color: #F2B8B5;
+            color: #B42318;
+        }
+
+        .gm_grid_row.day_off .gm_day_label {
+            color: #999;
+        }
+
+        .gm_grid_row.day_off .gm_day_off_btn {
+            background: #398829;
+            border-color: #398829;
+            color: #fff;
+        }
+
+        .gm_grid_row.day_off .gm_day_off_btn:hover {
+            background: #2F7422;
+            border-color: #2F7422;
+        }
+
+        .gm_day_off_note {
+            grid-column: 2 / -1;
+            min-height: 110px;
+            border: 1px dashed #D9D9D9;
+            border-radius: 16px;
+            background: #FAFAFA;
+            color: #777;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            font-weight: 600;
             text-align: center;
         }
 
@@ -1444,6 +1506,14 @@
 
         .gm_preset_settings_btn svg {
             flex-shrink: 0;
+        }
+
+        .generated_menu_wrapper.presets_hidden .gm_presets_row {
+            justify-content: flex-end;
+        }
+
+        .generated_menu_wrapper.presets_hidden .gm_presets_wrapper {
+            display: none !important;
         }
 
         .settings_menu_wrapper {
@@ -2278,13 +2348,76 @@
 
         .btn_final_buy {
             width: 100%;
-            background: #1A1A1A;
+            min-height: 72px;
+            background: #26BF3F;
             color: #fff;
-            padding: 18px;
-            border-radius: 12px;
-            font-weight: 600;
+            padding: 16px 22px;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 800;
             cursor: pointer;
             border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            transition: background 0.2s ease, transform 0.2s ease;
+        }
+
+        .btn_final_buy:hover {
+            background: #20AA37;
+        }
+
+        .btn_final_buy:active {
+            transform: translateY(1px);
+        }
+
+        .btn_final_buy.is_success {
+            background: #398829;
+        }
+
+        .btn_final_buy.is_loading {
+            pointer-events: none;
+            opacity: 0.88;
+        }
+
+        .btn_final_brand {
+            width: 36px;
+            height: 36px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            border-radius: 50%;
+            flex: 0 0 36px;
+        }
+
+        .btn_final_brand img {
+            width: 24px;
+            height: 24px;
+            display: block;
+            object-fit: contain;
+        }
+
+        .btn_final_price {
+            font-size: 24px;
+            line-height: 1;
+            white-space: nowrap;
+        }
+
+        .btn_final_divider {
+            width: 1px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.75);
+            flex: 0 0 1px;
+        }
+
+        .btn_final_label {
+            font-size: 16px;
+            line-height: 1.1;
+            letter-spacing: 0.2px;
+            text-transform: uppercase;
+            white-space: nowrap;
         }
 
 /* === Project refinements === */
@@ -2316,8 +2449,255 @@ body {
 .mini_survey_block,
 .gm_info_box,
 .gm_save_prefs_box,
+.profile_page_wrapper,
 .settings_menu_wrapper {
     box-sizing: border-box;
+}
+
+.header_profile_avatar {
+    display: none;
+    width: 44px;
+    height: 44px;
+    border: 3px solid #f06f6a;
+    border-radius: 50%;
+    padding: 2px;
+    background: #fff;
+    overflow: hidden;
+}
+
+.header_profile_avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.loginButton_login__ynDRq.is_logged_in {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+}
+
+.loginButton_login__ynDRq.is_logged_in .loginButton_text__f23lG,
+.loginButton_login__ynDRq.is_logged_in .loginButton_icon__dv_0u {
+    display: none;
+}
+
+.loginButton_login__ynDRq.is_logged_in .header_profile_avatar {
+    display: block;
+}
+
+.profile_page_wrapper {
+    width: min(510px, calc(100vw - 32px));
+    margin: 30px auto 60px;
+}
+
+.profile_hero {
+    position: relative;
+    min-height: 196px;
+}
+
+.profile_cover {
+    width: 100%;
+    height: 126px;
+    border-radius: 12px;
+    background: #d9d9d9;
+}
+
+.profile_avatar {
+    position: absolute;
+    left: 30px;
+    bottom: 0;
+    width: 104px;
+    height: 104px;
+    border: 4px solid #fff;
+    border-radius: 50%;
+    padding: 5px;
+    background: linear-gradient(145deg, #ff8b7c, #b60020);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    overflow: hidden;
+}
+
+.profile_avatar img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    object-position: center;
+    background: #fff;
+}
+
+.profile_settings_btn {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    width: 42px;
+    height: 42px;
+    border: 2px solid #241f20;
+    border-radius: 50%;
+    background: #fff;
+    color: #241f20;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.profile_logout_btn {
+    position: absolute;
+    right: 68px;
+    bottom: 14px;
+    height: 42px;
+    border: 2px solid #241f20;
+    border-radius: 18px;
+    background: #fff;
+    color: #241f20;
+    padding: 0 18px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.profile_identity {
+    margin-top: 18px;
+    padding-left: 9px;
+}
+
+.profile_identity h1 {
+    margin: 0 0 6px;
+    color: #241f20;
+    font-size: 30px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.profile_role {
+    margin: 0 0 10px;
+    color: #241f20;
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.profile_stats {
+    display: flex;
+    gap: 16px;
+    color: #241f20;
+    font-size: 14px;
+}
+
+.profile_tabs {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 56px;
+    border-bottom: 2px solid #d9d9d9;
+    overflow-x: auto;
+}
+
+.profile_tabs button {
+    position: relative;
+    flex: 0 0 auto;
+    border: 0;
+    background: transparent;
+    color: #666;
+    padding: 0 0 12px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.profile_tabs button.active {
+    color: #241f20;
+}
+
+.profile_tabs button.active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 3px;
+    background: #ff8a00;
+}
+
+.profile_filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-top: 34px;
+}
+
+.profile_filters button {
+    border: 1px solid #d9d9d9;
+    border-radius: 13px;
+    background: #fff;
+    color: #241f20;
+    padding: 9px 14px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.profile_filters button.active {
+    border-color: #ffdc00;
+    background: #ffdc00;
+}
+
+.profile_feed_card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 34px;
+    padding: 14px 16px;
+    border: 1px solid #e5e5e5;
+    border-radius: 12px;
+    background: #fff;
+}
+
+.profile_author {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-width: 0;
+}
+
+.profile_author img {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile_author strong {
+    display: block;
+    color: #241f20;
+    font-size: 14px;
+    line-height: 1.15;
+}
+
+.profile_author span {
+    display: block;
+    margin-top: 4px;
+    color: #777;
+    font-size: 11px;
+}
+
+.profile_follow_btn {
+    border: 2px solid #241f20;
+    border-radius: 16px;
+    background: #fff;
+    color: #241f20;
+    padding: 8px 14px;
+    font-size: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
 .gm_meal_card.nocook_card .gm_meal_front {
@@ -2560,6 +2940,13 @@ body {
         font-size: 22px;
         font-weight: 700;
         color: #1A1A1A;
+        flex-direction: row;
+        justify-content: space-between;
+    }
+
+    .gm_day_off_note {
+        grid-column: 1 / -1;
+        min-height: 78px;
     }
 
     .gm_meal_col::before {
@@ -3461,10 +3848,29 @@ canvas {
 
 .gm_meal_info {
     min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    max-height: 100%;
 }
 
 .gm_meal_title {
     overflow-wrap: anywhere;
+    display: -webkit-box;
+    margin-bottom: 6px;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+}
+
+.gm_meal_time {
+    flex: 0 0 auto;
+    white-space: nowrap;
+}
+
+.gm_meal_time svg {
+    flex: 0 0 14px;
 }
 
 .gm_presets_row,
@@ -3558,6 +3964,76 @@ canvas {
     }
 }
 
+@media (min-width: 768px) and (max-width: 1199px) {
+    .gm_presets_row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(210px, 100%), 1fr));
+        align-items: stretch;
+        gap: 10px;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .gm_presets_wrapper {
+        display: contents;
+        overflow: visible;
+        margin-left: 0;
+        margin-right: 0;
+        padding-left: 0;
+        padding-right: 0;
+        padding-bottom: 0;
+    }
+
+    .gm_preset_btn {
+        justify-content: center;
+        width: 100%;
+        min-width: 0;
+        min-height: 38px;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .gm_preset_settings_btn {
+        justify-content: center;
+        width: 100%;
+        min-width: 0;
+        min-height: 38px;
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .gm_meal_card,
+    .gm_meal_card_inner {
+        min-height: 132px;
+    }
+
+    .gm_meal_front {
+        flex-direction: row;
+        padding: 16px;
+    }
+
+    .gm_meal_info {
+        max-width: calc(100% - 94px);
+        padding-right: 0;
+    }
+
+    .gm_meal_title {
+        line-height: 1.24;
+    }
+
+    .gm_meal_photo {
+        position: absolute;
+        right: -22px;
+        top: 50%;
+        width: 118px;
+        height: 118px;
+        border-radius: 50%;
+        transform: translateY(-50%);
+    }
+}
+
 @media (max-width: 900px) {
     .header_searchInput__ZnreF {
         display: none !important;
@@ -3577,14 +4053,16 @@ canvas {
     }
 
     .gm_save_prefs_actions,
-    .btn_take_survey {
+    .btn_take_survey,
+    .gm_info_btn {
         width: 100%;
         max-width: 100%;
     }
 
     .gm_save_prefs_primary,
     .gm_save_prefs_secondary,
-    .btn_take_survey {
+    .btn_take_survey,
+    .gm_info_btn {
         display: flex;
         justify-content: center;
         text-align: center;
@@ -3744,6 +4222,35 @@ canvas {
         padding: 18px;
     }
 
+    .btn_final_buy {
+        min-height: 64px;
+        gap: 14px;
+        padding: 14px 16px;
+    }
+
+    .btn_final_brand {
+        width: 32px;
+        height: 32px;
+        flex-basis: 32px;
+    }
+
+    .btn_final_brand img {
+        width: 22px;
+        height: 22px;
+    }
+
+    .btn_final_price {
+        font-size: 20px;
+    }
+
+    .btn_final_label {
+        font-size: 13px;
+    }
+
+    .btn_final_divider {
+        height: 28px;
+    }
+
     .fab_cart {
         right: 16px;
         bottom: max(18px, env(safe-area-inset-bottom));
@@ -3752,12 +4259,52 @@ canvas {
     }
 }
 
+@media (min-width: 521px) and (max-width: 767px) {
+    .gm_presets_row {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(min(185px, 100%), 1fr));
+        align-items: stretch;
+        gap: 8px;
+    }
+
+    .gm_presets_row .gm_presets_wrapper {
+        display: contents;
+        overflow: visible;
+        padding: 0;
+    }
+
+    .gm_preset_btn,
+    .gm_preset_settings_btn {
+        justify-content: center;
+        width: 100%;
+        min-width: 0;
+        min-height: 42px;
+        padding: 9px 12px;
+    }
+
+    .gm_preset_settings_btn {
+        border-radius: 20px;
+    }
+
+    .gm_preset_settings_btn span {
+        display: inline;
+    }
+}
+
 @media (max-width: 520px) {
     .gm_presets_row {
         gap: 6px;
     }
 
+    .gm_presets_row .gm_presets_wrapper {
+        scroll-padding-left: 12px;
+    }
+
     .gm_preset_btn {
+        flex: 0 0 auto;
+        max-width: min(72vw, 230px);
+        overflow: hidden;
+        text-overflow: ellipsis;
         font-size: 14px;
         padding: 9px 14px;
     }
@@ -3829,5 +4376,247 @@ canvas {
     .chart_tab_btn {
         padding-left: 14px;
         padding-right: 14px;
+    }
+}
+
+@media (max-width: 767px) {
+    .gm_meal_card,
+    .gm_meal_card_inner {
+        min-height: clamp(136px, 31vw, 152px);
+    }
+
+    .gm_meal_front {
+        padding: 16px;
+    }
+
+    .gm_meal_photo {
+        top: 0;
+        right: 0;
+        width: clamp(118px, 32vw, 168px);
+        height: 100%;
+        border-radius: 0 16px 16px 0;
+        transform: none;
+    }
+
+    .gm_meal_info {
+        max-width: calc(100% - clamp(130px, 34vw, 180px));
+    }
+
+    .gm_meal_back {
+        justify-content: center;
+        gap: 8px;
+        padding: 12px;
+    }
+
+    .kbju_back_top {
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+        width: 100%;
+        min-height: 22px;
+        padding-right: 58px;
+    }
+
+    .kbju_back_name {
+        flex: 1 1 auto;
+        max-width: none;
+        font-size: 12px;
+        line-height: 1.2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .kbju_price {
+        padding: 2px 7px;
+        font-size: 10px;
+    }
+
+    .kbju_back_row {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        align-items: stretch;
+        width: 100%;
+        gap: 4px;
+    }
+
+    .kbju_nut {
+        min-width: 0;
+        gap: 1px;
+        line-height: 1;
+    }
+
+    .kbju_nut_icon {
+        font-size: 16px;
+        line-height: 1;
+    }
+
+    .kbju_nut_val {
+        font-size: 13px;
+        line-height: 1.15;
+    }
+
+    .kbju_nut_label {
+        font-size: 7px;
+        letter-spacing: 0;
+    }
+}
+
+.gm_meal_back {
+    justify-content: center;
+    gap: 8px;
+    padding: 12px;
+}
+
+.kbju_back_top {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    min-width: 0;
+    min-height: 22px;
+    padding-right: 68px;
+}
+
+.kbju_back_name {
+    flex: 1 1 auto;
+    max-width: none;
+    min-width: 0;
+    font-size: 12px;
+    line-height: 1.2;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.kbju_price {
+    order: 0;
+    flex: 0 0 auto;
+    padding: 2px 7px;
+    font-size: 10px;
+}
+
+.kbju_back_row {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: stretch;
+    width: 100%;
+    gap: 4px;
+}
+
+.kbju_nut {
+    min-width: 0;
+    gap: 1px;
+    line-height: 1;
+    flex: none;
+}
+
+.kbju_nut_icon {
+    font-size: clamp(15px, 1.2vw, 18px);
+    line-height: 1;
+}
+
+.kbju_nut_val {
+    font-size: clamp(12px, 1vw, 14px);
+    line-height: 1.15;
+}
+
+.kbju_nut_label {
+    font-size: 7px;
+    letter-spacing: 0;
+}
+
+@media (max-width: 767px) {
+    .loginButton_login__ynDRq.is_logged_in {
+        display: flex !important;
+    }
+
+    .profile_page_wrapper {
+        width: calc(100vw - 24px);
+        margin-top: 22px;
+        margin-bottom: 56px;
+    }
+
+    .profile_hero {
+        min-height: 240px;
+    }
+
+    .profile_cover {
+        height: 150px;
+        border-radius: 16px;
+    }
+
+    .profile_avatar {
+        left: 22px;
+        width: 128px;
+        height: 128px;
+        padding: 6px;
+    }
+
+    .profile_settings_btn {
+        right: 12px;
+        bottom: 16px;
+        width: 52px;
+        height: 52px;
+    }
+
+    .profile_logout_btn {
+        right: 76px;
+        bottom: 16px;
+        height: 52px;
+        border-radius: 22px;
+        padding: 0 18px;
+        font-size: 16px;
+    }
+
+    .profile_identity {
+        margin-top: 20px;
+        padding-left: 0;
+    }
+
+    .profile_identity h1 {
+        font-size: 36px;
+    }
+
+    .profile_role {
+        font-size: 18px;
+    }
+
+    .profile_stats {
+        gap: 16px;
+        font-size: 15px;
+    }
+
+    .profile_tabs {
+        margin-top: 46px;
+        gap: 18px;
+    }
+
+    .profile_tabs button {
+        font-size: 18px;
+        padding-bottom: 14px;
+    }
+
+    .profile_filters {
+        gap: 10px;
+        margin-top: 28px;
+    }
+
+    .profile_filters button {
+        padding: 11px 16px;
+        font-size: 16px;
+    }
+
+    .profile_feed_card {
+        align-items: flex-start;
+        flex-direction: column;
+        margin-top: 30px;
+        padding: 18px;
+    }
+
+    .profile_follow_btn {
+        width: 100%;
+        justify-content: center;
+        font-size: 17px;
     }
 }

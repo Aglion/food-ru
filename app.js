@@ -608,6 +608,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         activeActionTarget.parentNode.insertBefore(newCard, activeActionTarget);
                     }
 
+                    syncMenuAfterRecipeChange();
                     replaceModal.style.display = 'none';
                 });
             });
@@ -667,6 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 deleteIcon.addEventListener('click', (e) => {
                     e.stopPropagation();
                     card.remove();
+                    syncMenuAfterRecipeChange();
                 });
 
                 card.addEventListener('click', (e) => {
@@ -718,6 +720,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         const next = draggedCard.nextSibling;
                         targetCard.parentNode.insertBefore(draggedCard, targetCard);
                         parent.insertBefore(targetCard, next);
+                        syncMenuAfterRecipeChange();
                     }
                 });
             }
@@ -730,6 +733,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const surveyStep2 = document.querySelector('.survey_step_2_wrapper');
             const generatedMenu = document.querySelector('.generated_menu_wrapper');
             const settingsMenu = document.querySelector('.settings_menu_wrapper');
+            const profilePage = document.getElementById('profilePage');
 
             // Элементы для баннеров персонализации
             const gmInfoBox = document.getElementById('gmInfoBox');
@@ -741,20 +745,26 @@ document.addEventListener('DOMContentLoaded', () => {
             const continueBtn1 = document.getElementById('surveyContinueBtn');
             const backBtn2 = document.getElementById('surveyBackBtn2');
             const finishBtn = document.getElementById('surveyFinishBtn');
+            const headerLoginBtn = document.getElementById('headerLoginBtn');
+            const headerLogoLink = document.querySelector('.header_logo__5ZQzq');
+            const profileLogoutBtn = document.getElementById('profileLogoutBtn');
             const openSettingsBtn = document.getElementById('openSettingsBtn');
             const applySettingsBtn = document.getElementById('applySettingsBtn');
             const closeSettingsBtn = document.getElementById('closeSettingsBtn');
             const openSurveyFromGmBtn = document.getElementById('openSurveyFromGmBtn');
+            const retakeSurveyBtn = document.getElementById('retakeSurveyBtn');
             const savePrefsLoginBtn = document.getElementById('savePrefsLoginBtn');
             const savePrefsLaterBtn = document.getElementById('savePrefsLaterBtn');
             const gmLoadMoreBtn = document.getElementById('gmLoadMoreBtn');
             const gmHideMoreBtn = document.getElementById('gmHideMoreBtn');
             const gmWrapper = document.querySelector('.generated_menu_wrapper');
+            const gmPresetsWrapper = document.querySelector('.gm_presets_wrapper');
 
             // Карточки
             const cards1 = document.querySelectorAll('.cuisine_card');
             const cards2 = document.querySelectorAll('.exclude_card');
             const preferencesStorageKey = 'food_menu_preferences_v1';
+            const profileAuthStorageKey = 'food_profile_logged_in';
 
             function normalizePreferenceTerm(value) {
                 return String(value || '').trim().toLowerCase();
@@ -871,6 +881,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gmInfoBox) gmInfoBox.style.display = 'none';
             if (gmMiniSurveyBlock) gmMiniSurveyBlock.style.display = 'flex';
             if (gmSavePrefsBox) gmSavePrefsBox.style.display = 'none';
+            if (profilePage) profilePage.style.display = 'none';
             // ---------------------------------------------
 
             function openSettingsModal() {
@@ -883,6 +894,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 document.body.style.overflow = '';
             }
 
+            function setHeaderLoggedIn(isLoggedIn) {
+                if (!headerLoginBtn) return;
+                headerLoginBtn.classList.toggle('is_logged_in', isLoggedIn);
+                headerLoginBtn.setAttribute('aria-label', isLoggedIn ? 'Открыть личный кабинет' : 'Авторизоваться');
+            }
+
+            function showProfilePage() {
+                if (!profilePage) return;
+                generatedMenu.style.display = 'none';
+                surveyStep1.style.display = 'none';
+                surveyStep2.style.display = 'none';
+                closeSettingsModal();
+                profilePage.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            function showMenuPage() {
+                if (profilePage) profilePage.style.display = 'none';
+                surveyStep1.style.display = 'none';
+                surveyStep2.style.display = 'none';
+                closeSettingsModal();
+                generatedMenu.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            const isProfileLoggedIn = localStorage.getItem(profileAuthStorageKey) === 'true';
+            setHeaderLoggedIn(isProfileLoggedIn);
+            if (isProfileLoggedIn) showProfilePage();
+
             function showSavePrefsPrompt() {
                 if (gmSavePrefsBox) gmSavePrefsBox.style.display = 'flex';
             }
@@ -891,13 +931,42 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (gmSavePrefsBox) gmSavePrefsBox.style.display = 'none';
             }
 
+            function setPresetControlsHidden(hidden) {
+                if (generatedMenu) generatedMenu.classList.toggle('presets_hidden', hidden);
+                if (gmPresetsWrapper) gmPresetsWrapper.setAttribute('aria-hidden', hidden ? 'true' : 'false');
+            }
+
+            setPresetControlsHidden(Boolean(readStoredPreferences().surveyCompleted));
+
+            function openSurveyFlow(event) {
+                if (event) event.preventDefault();
+                generatedMenu.style.display = 'none';
+                surveyStep2.style.display = 'none';
+                surveyStep1.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
             // Клик "Пройти" опрос из дефолтного меню
             if (openSurveyFromGmBtn) {
-                openSurveyFromGmBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    generatedMenu.style.display = 'none';
-                    surveyStep1.style.display = 'block';
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                openSurveyFromGmBtn.addEventListener('click', openSurveyFlow);
+            }
+
+            if (retakeSurveyBtn) {
+                retakeSurveyBtn.addEventListener('click', openSurveyFlow);
+            }
+
+            if (headerLogoLink) {
+                headerLogoLink.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    showMenuPage();
+                });
+            }
+
+            if (profileLogoutBtn) {
+                profileLogoutBtn.addEventListener('click', () => {
+                    localStorage.removeItem(profileAuthStorageKey);
+                    setHeaderLoggedIn(false);
+                    showMenuPage();
                 });
             }
 
@@ -926,12 +995,24 @@ document.addEventListener('DOMContentLoaded', () => {
             const fakeSubmitBtn = document.getElementById('fake_submit_button');
             const closeX5Button = document.getElementById('close-x5-button');
 
-            if (savePrefsLoginBtn) {
-                savePrefsLoginBtn.addEventListener('click', () => {
-                    if (!x5idAuthWrapper) return;
-                    x5idAuthWrapper.style.display = 'flex';
-                    document.body.style.overflow = 'hidden';
+            function openX5AuthModal() {
+                if (!x5idAuthWrapper) return;
+                x5idAuthWrapper.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            if (headerLoginBtn) {
+                headerLoginBtn.addEventListener('click', () => {
+                    if (localStorage.getItem(profileAuthStorageKey) === 'true') {
+                        showProfilePage();
+                        return;
+                    }
+                    openX5AuthModal();
                 });
+            }
+
+            if (savePrefsLoginBtn) {
+                savePrefsLoginBtn.addEventListener('click', openX5AuthModal);
             }
 
             if (savePrefsLaterBtn) {
@@ -942,7 +1023,10 @@ document.addEventListener('DOMContentLoaded', () => {
             finishBtn.addEventListener('click', () => {
                 surveyStep2.style.display = 'none';
                 syncSurveyExcludesToSettings();
-                savePreferenceState({ stopListTouched: getStopListTerms().length > 0 });
+                savePreferenceState({
+                    stopListTouched: getStopListTerms().length > 0,
+                    surveyCompleted: true
+                });
 
                 generatedMenu.style.display = 'block';
                 if (x5idAuthWrapper) {
@@ -959,6 +1043,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     forYouPreset.style.display = 'flex';
                     forYouPreset.click();
                 }
+                setPresetControlsHidden(true);
 
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
@@ -1003,6 +1088,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             forYouPreset.style.display = 'flex';
                             forYouPreset.click();
                         }
+                        setPresetControlsHidden(true);
+                        localStorage.setItem(profileAuthStorageKey, 'true');
+                        setHeaderLoggedIn(true);
+                        showProfilePage();
                     }, 1000); // 1 секунда имитации загрузки
                 });
             }
@@ -1241,7 +1330,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     chartData.budget.days
                         .map((day, index) => day.type === 'ready' ? index : -1)
                         .filter(index => index >= 0)
-                )
+                ),
+                menuOffDays: new Set()
             };
             let activeChartTab = 'budget';
 
@@ -1253,6 +1343,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             function formatRub(value) {
                 return `${Math.round(value).toLocaleString('ru-RU')} ₽`;
+            }
+
+            function setFinalBuyButtonContent(priceText, labelText = 'ОФОРМИТЬ ЗАКАЗ') {
+                if (!finalBuyBtn) return;
+
+                const price = finalBuyBtn.querySelector('.btn_final_price');
+                const label = finalBuyBtn.querySelector('.btn_final_label');
+
+                if (price) price.innerText = priceText;
+                if (label) label.innerText = labelText;
             }
 
             function formatMinutes(totalMinutes) {
@@ -1288,10 +1388,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     const factor = getChartValueFactor(key);
                     chartData[key].days.forEach((day, index) => {
                         const isNoCookDay = settingsState.noCookDays.has(index);
+                        const isMenuOffDay = settingsState.menuOffDays.has(index);
                         const menuValue = menuMetrics[index]?.[key];
                         const hasMenuValue = menuMetrics[index]?.count > 0 && Number.isFinite(menuValue);
-                        day.type = isNoCookDay ? 'ready' : 'cook';
-                        day.val = key === 'time' && isNoCookDay
+                        const hasEmptyMenuDay = menuMetrics[index]?.visibleSlots > 0 && menuMetrics[index]?.count === 0;
+                        day.type = isNoCookDay || isMenuOffDay ? 'ready' : 'cook';
+                        day.val = isMenuOffDay || hasEmptyMenuDay
+                            ? 0
+                            : key === 'time' && isNoCookDay
                             ? 0
                             : Math.round(hasMenuValue ? menuValue : ((Number(day.baseVal) || 0) * factor));
                     });
@@ -1301,9 +1405,13 @@ document.addEventListener('DOMContentLoaded', () => {
             function getVisibleMenuStats() {
                 let recipesCount = 0;
                 let total = 0;
+                let visibleSlots = 0;
+                let totalSlots = 0;
 
                 document.querySelectorAll('.gm_grid_row .gm_meal_col').forEach(col => {
+                    totalSlots++;
                     if (col.style.display === 'none') return;
+                    visibleSlots++;
                     const card = col.querySelector('.gm_meal_card');
                     if (!card) return;
 
@@ -1312,15 +1420,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     total += price * settingsState.portions;
                 });
 
-                return { recipesCount, total };
+                return { recipesCount, total, visibleSlots, totalSlots };
             }
 
             function updateMenuSummary() {
                 const mealsFactor = settingsState.mealsPerDay / 3;
                 const portionsFactor = settingsState.portions / 4;
                 const menuStats = getVisibleMenuStats();
-                const recipesCount = menuStats.recipesCount || (7 * settingsState.mealsPerDay);
-                const cartTotal = Math.round(menuStats.total || (4250 * mealsFactor * portionsFactor));
+                const hasMenuSlots = menuStats.totalSlots > 0;
+                const recipesCount = hasMenuSlots ? menuStats.recipesCount : (7 * settingsState.mealsPerDay);
+                const cartTotal = Math.round(hasMenuSlots ? menuStats.total : (4250 * mealsFactor * portionsFactor));
 
                 if (gmBannerSubtitle) {
                     gmBannerSubtitle.innerText = `${recipesCount} рецептов, ~${formatRub(cartTotal)}`;
@@ -1329,7 +1438,19 @@ document.addEventListener('DOMContentLoaded', () => {
                     fabCartBadge.innerText = formatRub(cartTotal);
                 }
                 if (finalBuyBtn) {
-                    finalBuyBtn.innerText = `Добавить в корзину (${formatRub(cartTotal)})`;
+                    finalBuyBtn.classList.remove('is_success', 'is_loading');
+                    setFinalBuyButtonContent(formatRub(cartTotal));
+                }
+            }
+
+            function syncMenuAfterRecipeChange() {
+                recalculateChartData();
+                updateMenuSummary();
+                if (chartContainer) renderChart(activeChartTab);
+
+                const activeDrawer = document.getElementById('slDrawer');
+                if (activeDrawer?.classList.contains('active')) {
+                    renderRecipeCart();
                 }
             }
 
@@ -1343,9 +1464,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             function getMenuDayMetrics() {
                 return Array.from(document.querySelectorAll('.gm_grid_row')).map((row, dayIndex) => {
-                    const metric = { budget: 0, calories: 0, protein: 0, time: 0, count: 0 };
+                    const metric = { budget: 0, calories: 0, protein: 0, time: 0, count: 0, visibleSlots: 0 };
                     row.querySelectorAll('.gm_meal_col').forEach(col => {
                         if (col.style.display === 'none') return;
+                        metric.visibleSlots++;
                         const card = col.querySelector('.gm_meal_card');
                         if (!card) return;
 
@@ -1505,10 +1627,139 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
+            function getDayOffButtonSvg(isOff) {
+                if (isOff) {
+                    return `
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="M5 12h14"></path>
+                            <path d="M12 5v14"></path>
+                        </svg>
+                    `;
+                }
+
+                return `
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M3 6h18"></path>
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path>
+                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                    </svg>
+                `;
+            }
+
+            function getRowDayText(row) {
+                return row.querySelector('.gm_day_text')?.innerText.trim()
+                    || row.querySelector('.gm_day_label')?.innerText.trim()
+                    || '';
+            }
+
+            function updateDayOffButton(row) {
+                const button = row.querySelector('.gm_day_off_btn');
+                if (!button) return;
+
+                const isOff = settingsState.menuOffDays.has(Number(row.dataset.dayIndex));
+                const day = getRowDayText(row);
+                button.innerHTML = getDayOffButtonSvg(isOff);
+                button.setAttribute('aria-label', isOff ? `Вернуть рецепты на ${day}` : `Убрать рецепты на ${day}`);
+                button.title = isOff ? 'Вернуть рецепты' : 'Убрать день';
+            }
+
+            function ensureDayOffControls() {
+                document.querySelectorAll('.gm_grid_row').forEach((row, dayIndex) => {
+                    row.dataset.dayIndex = String(dayIndex);
+
+                    const label = row.querySelector('.gm_day_label');
+                    if (!label) return;
+
+                    if (!label.querySelector('.gm_day_text')) {
+                        const dayText = label.textContent.trim();
+                        label.textContent = '';
+
+                        const text = document.createElement('span');
+                        text.className = 'gm_day_text';
+                        text.textContent = dayText;
+                        label.appendChild(text);
+                    }
+
+                    if (!label.querySelector('.gm_day_off_btn')) {
+                        const button = document.createElement('button');
+                        button.className = 'gm_day_off_btn';
+                        button.type = 'button';
+                        button.addEventListener('click', (event) => {
+                            event.stopPropagation();
+                            toggleMenuDayOff(row);
+                        });
+                        label.appendChild(button);
+                    }
+
+                    updateDayOffButton(row);
+                });
+            }
+
+            function setMenuDayOff(row, isOff, options = {}) {
+                const dayIndex = Number(row.dataset.dayIndex);
+                row.classList.toggle('day_off', isOff);
+
+                let note = row.querySelector('.gm_day_off_note');
+                if (isOff) {
+                    row.querySelectorAll('.gm_meal_card').forEach(card => card.remove());
+                    row.querySelectorAll('.gm_meal_col').forEach(col => {
+                        col.style.display = 'none';
+                    });
+
+                    if (!note) {
+                        note = document.createElement('div');
+                        note.className = 'gm_day_off_note';
+                        row.appendChild(note);
+                    }
+                    note.textContent = 'День без готовки';
+                } else {
+                    if (note) note.remove();
+
+                    row.querySelectorAll('.gm_meal_col').forEach(col => {
+                        const mealIndex = Number(col.dataset.mealIndex);
+                        if (mealIndex >= settingsState.mealsPerDay) return;
+
+                        col.style.display = '';
+                        if (options.restoreRecipes && !col.querySelector('.gm_meal_card')) {
+                            const addButton = col.querySelector('.gm_add_dish_btn');
+                            col.insertBefore(createGeneratedMealCard(dayIndex, mealIndex), addButton || null);
+                        }
+                    });
+                }
+
+                updateDayOffButton(row);
+            }
+
+            function applyMenuOffDaysToRows() {
+                ensureDayOffControls();
+                document.querySelectorAll('.gm_grid_row').forEach((row, dayIndex) => {
+                    setMenuDayOff(row, settingsState.menuOffDays.has(dayIndex), { restoreRecipes: false });
+                });
+            }
+
+            function toggleMenuDayOff(row) {
+                const dayIndex = Number(row.dataset.dayIndex);
+                const isOff = settingsState.menuOffDays.has(dayIndex);
+
+                if (isOff) {
+                    settingsState.menuOffDays.delete(dayIndex);
+                    setMenuDayOff(row, false, { restoreRecipes: true });
+                    applyNoCookDaysToMenu();
+                } else {
+                    settingsState.menuOffDays.add(dayIndex);
+                    setMenuDayOff(row, true);
+                }
+
+                syncMenuAfterRecipeChange();
+            }
+
             function applySettingsToConstructor() {
                 ensureMealColumns();
                 applyActivePreset({ animate: false });
                 applyNoCookDaysToMenu();
+                applyMenuOffDaysToRows();
                 recalculateChartData();
                 updateMenuSummary();
                 if (chartContainer) renderChart(activeChartTab);
@@ -2119,7 +2370,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const recipes = [];
 
                 document.querySelectorAll('.gm_grid_row').forEach(row => {
-                    const day = row.querySelector('.gm_day_label')?.innerText.trim() || '';
+                    const day = row.querySelector('.gm_day_text')?.innerText.trim()
+                        || row.querySelector('.gm_day_label')?.innerText.trim()
+                        || '';
 
                     row.querySelectorAll('.gm_meal_col').forEach((col, colIndex) => {
                         if (col.style.display === 'none') return;
@@ -2186,7 +2439,6 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('openChecklistBtn').addEventListener('click', () => {
                 if (finalBuyBtn) {
                     updateMenuSummary();
-                    finalBuyBtn.style.background = '#1A1A1A';
                 }
                 renderRecipeCart();
                 slOverlay.style.display = 'block';
@@ -2210,11 +2462,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Финальная покупка
             document.getElementById('btnFinalBuy').addEventListener('click', function () {
-                this.innerText = 'Добавляем...';
+                const priceText = this.querySelector('.btn_final_price')?.innerText || '';
+                this.classList.remove('is_success');
+                this.classList.add('is_loading');
+                setFinalBuyButtonContent(priceText, 'ОФОРМЛЯЕМ...');
                 setTimeout(() => {
-                    this.innerText = 'Рецепты в корзине!';
-                    this.style.background = '#398829';
-                    setTimeout(closeSl, 1000);
+                    this.classList.remove('is_loading');
+                    this.classList.add('is_success');
+                    setFinalBuyButtonContent(priceText, 'ЗАКАЗ ОФОРМЛЕН');
+                    setTimeout(() => {
+                        closeSl();
+                        this.classList.remove('is_success');
+                        setFinalBuyButtonContent(priceText);
+                    }, 1000);
                 }, 800);
             });
         });
