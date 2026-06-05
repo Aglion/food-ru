@@ -8,11 +8,39 @@ document.addEventListener('DOMContentLoaded', () => {
             <span class="kbju_price">на 100 г</span>
         </div>
         <div class="kbju_back_row">
-            <div class="kbju_nut"><div class="kbju_nut_icon">🔥</div><div class="kbju_nut_val">${kcal}</div><div class="kbju_nut_label">ККАЛ</div></div>
-            <div class="kbju_nut"><div class="kbju_nut_icon">🥩</div><div class="kbju_nut_val">${prot}г</div><div class="kbju_nut_label">БЕЛОК</div></div>
-            <div class="kbju_nut"><div class="kbju_nut_icon">💧</div><div class="kbju_nut_val">${fat}г</div><div class="kbju_nut_label">ЖИРЫ</div></div>
-            <div class="kbju_nut"><div class="kbju_nut_icon">🌾</div><div class="kbju_nut_val">${carb}г</div><div class="kbju_nut_label">УГЛЕВ</div></div>
+            <div class="kbju_nut"><div class="kbju_nut_val">${kcal}</div><div class="kbju_nut_label">ККАЛ</div></div>
+            <div class="kbju_nut"><div class="kbju_nut_val">${prot}г</div><div class="kbju_nut_label">БЕЛКИ</div></div>
+            <div class="kbju_nut"><div class="kbju_nut_val">${fat}г</div><div class="kbju_nut_label">ЖИРЫ</div></div>
+            <div class="kbju_nut"><div class="kbju_nut_val">${carb}г</div><div class="kbju_nut_label">УГЛЕВ</div></div>
         </div>`;
+            }
+
+            function makeMealNutritionHtml(kcal, prot, fat, carb) {
+                return `<div class="gm_meal_nutrition" aria-label="КБЖУ на 100 г">
+                    <span><b>${kcal}</b><small>ккал</small></span>
+                    <span><b>${prot}г</b><small>белки</small></span>
+                    <span><b>${fat}г</b><small>жиры</small></span>
+                    <span><b>${carb}г</b><small>углев.</small></span>
+                </div>`;
+            }
+
+            function syncMealFrontNutrition(card) {
+                if (!card) return;
+                const info = card.querySelector('.gm_meal_info');
+                if (!info) return;
+
+                const kcal = card.dataset.kcal || '0';
+                const prot = card.dataset.prot || '0';
+                const fat = card.dataset.fat || '0';
+                const carb = card.dataset.carb || '0';
+                const existing = info.querySelector('.gm_meal_nutrition');
+                const html = makeMealNutritionHtml(kcal, prot, fat, carb);
+
+                if (existing) {
+                    existing.outerHTML = html;
+                } else {
+                    info.insertAdjacentHTML('beforeend', html);
+                }
             }
             const defaultPrices = [85, 120, 150, 95, 110, 105, 90, 130, 160, 75, 140, 125, 85, 115, 180, 90, 145, 105, 90, 135, 70];
             const defaultKbju = [
@@ -39,6 +67,79 @@ document.addEventListener('DOMContentLoaded', () => {
                 const category = mealSlotCategories[index] || 'snack';
                 return { label, category };
             }
+
+            function initSideNavigation() {
+                const navToggle = document.querySelector('.navigationControl_navigationControll__via4b');
+                const asideColumn = document.querySelector('#__next > .grid_container__JBmS8 > .grid_row__6w91D > .grid_col_lg_3__m_gG4');
+                const categoryButtons = document.querySelectorAll('.categoryHeader_button__nGpLJ');
+                const desktopQuery = window.matchMedia('(min-width: 1281px)');
+                let overlay = document.querySelector('.food_nav_overlay');
+
+                if (!overlay) {
+                    overlay = document.createElement('div');
+                    overlay.className = 'food_nav_overlay';
+                    document.body.appendChild(overlay);
+                }
+
+                if (asideColumn) {
+                    asideColumn.id = asideColumn.id || 'foodSideNavigation';
+                }
+
+                function setDrawerOpen(isOpen) {
+                    document.body.classList.toggle('food_nav_open', isOpen);
+                    if (navToggle) {
+                        navToggle.setAttribute('aria-expanded', String(isOpen));
+                        if (asideColumn) navToggle.setAttribute('aria-controls', asideColumn.id);
+                    }
+                }
+
+                function setCategoryOpen(button, isOpen) {
+                    const targetId = button.getAttribute('aria-controls');
+                    const region = targetId ? document.getElementById(targetId) : null;
+                    const chevron = button.querySelector('.categoryHeader_chevron__oVH4O');
+
+                    button.setAttribute('aria-expanded', String(isOpen));
+                    if (!region) return;
+
+                    region.setAttribute('aria-hidden', String(!isOpen));
+                    region.classList.toggle('twoTieredCategory_hidenSubCategoriesWrapper__Z0sym', !isOpen);
+                    region.classList.toggle('threeTieredCategory_hidenSubCategoriesWrapper__9XuhU', !isOpen);
+                    if (chevron) chevron.classList.toggle('categoryHeader_chevron_opened__HddAx', isOpen);
+                }
+
+                categoryButtons.forEach(button => {
+                    setCategoryOpen(button, button.getAttribute('aria-expanded') === 'true');
+                    button.addEventListener('click', event => {
+                        event.preventDefault();
+                        const isOpen = button.getAttribute('aria-expanded') === 'true';
+                        setCategoryOpen(button, !isOpen);
+                    });
+                });
+
+                if (navToggle) {
+                    navToggle.setAttribute('aria-expanded', 'false');
+                    navToggle.addEventListener('click', () => {
+                        setDrawerOpen(!document.body.classList.contains('food_nav_open'));
+                    });
+                }
+
+                overlay.addEventListener('click', () => setDrawerOpen(false));
+                document.addEventListener('keydown', event => {
+                    if (event.key === 'Escape') setDrawerOpen(false);
+                });
+
+                const handleDesktopChange = event => {
+                    if (event.matches) setDrawerOpen(false);
+                };
+
+                if (desktopQuery.addEventListener) {
+                    desktopQuery.addEventListener('change', handleDesktopChange);
+                } else if (desktopQuery.addListener) {
+                    desktopQuery.addListener(handleDesktopChange);
+                }
+            }
+
+            initSideNavigation();
 
             function normalizeRecipeName(value) {
                 return String(value || '').trim().toLowerCase();
@@ -136,6 +237,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     const displayName = titleEl ? titleEl.innerText.trim() : recipe.name;
                     back.innerHTML = makeKbjuHtml(kbju[0], kbju[1], kbju[2], kbju[3], displayName, getRecipePrice(recipe, 0));
                 }
+
+                syncMealFrontNutrition(card);
             }
 
             function refreshCardNutrition(card, title, fallbackIndex) {
@@ -157,6 +260,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     card.dataset.price = String(price);
                     back.innerHTML = makeKbjuHtml(kbju[0], kbju[1], kbju[2], kbju[3], title, price);
                 }
+                syncMealFrontNutrition(card);
             }
 
             function getRecipeSearchText(recipe) {
@@ -179,11 +283,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const recipeKeywordGroups = {
                 meat: ['кур', 'свин', 'гов', 'бекон', 'ветчин', 'колбас', 'фарш', 'голень', 'филе кур', 'мяс'],
-                fish: ['рыб', 'лосос', 'тунец', 'треск', 'горбуш', 'краб', 'кревет', 'морепродукт'],
+                fish: ['рыб', 'лосос', 'тунец', 'треск', 'горбуш', 'краб', 'кревет', 'морепродукт', 'моллюск', 'мидии', 'ракообраз'],
                 dairy: ['молоко', 'сыр', 'слив', 'сметан', 'творог', 'йогурт', 'моцарел', 'пармезан', 'рикотт', 'сулугуни', 'фета'],
-                gluten: ['хлеб', 'мука', 'паста', 'спагетти', 'фетучини', 'чиабатт', 'тортиль', 'сухар', 'манн', 'лаваш'],
+                gluten: ['хлеб', 'мука', 'муч', 'паста', 'макарон', 'спагетти', 'фетучини', 'чиабатт', 'тортиль', 'сухар', 'манн', 'лаваш'],
                 eggs: ['яйц', 'омлет', 'желток', 'белок'],
-                nuts: ['орех', 'миндал', 'кешью', 'песто'],
+                nuts: ['орех', 'арахис', 'миндал', 'кешью', 'песто'],
                 spicy: ['чили', 'халапеньо', 'аджик', 'остр', 'кайен'],
                 soy: ['соя', 'соев'],
                 sesame: ['кунжут'],
@@ -195,6 +299,26 @@ document.addEventListener('DOMContentLoaded', () => {
                 citrus: ['цитрус', 'лимон', 'лайм', 'апельсин'],
                 mushrooms: ['гриб', 'шампиньон'],
                 tomatoes: ['томат', 'помидор'],
+                pork: ['свин', 'бекон', 'ветчин'],
+                chicken: ['кур', 'цыплен'],
+                redMeat: ['свин', 'гов', 'бекон', 'ветчин', 'фарш'],
+                offal: ['печен', 'печён', 'сердц', 'желуд', 'субпродукт'],
+                prepared: ['полуфабрикат', 'готов', 'котлета по-киевски', 'пятёрочка кафе', 'пятерочка кафе'],
+                soups: ['суп', 'борщ', 'солянк', 'рассольник', 'щи', 'харчо', 'окрошк'],
+                potatoes: ['картоф'],
+                buckwheat: ['греч'],
+                beetroot: ['свек', 'свёк'],
+                pasta: ['макарон', 'паста', 'спагетти', 'фетучини', 'лапш'],
+                pepper: ['перец', 'паприк', 'чили'],
+                raisins: ['изюм'],
+                rice: ['рис'],
+                sugar: ['сахар', 'сгущ', 'сироп'],
+                legumes: ['боб', 'фасол', 'нут', 'горох', 'чечевиц', 'маш'],
+                eggplants: ['баклажан'],
+                nightshades: ['томат', 'помидор', 'картоф', 'перец', 'баклажан', 'паприк', 'чили'],
+                yeast: ['дрожж'],
+                sulfites: ['сульфит', 'диоксид серы'],
+                aspartame: ['аспартам'],
                 garlic: ['чеснок'],
                 onion: ['лук', 'шалот'],
                 noCook: ['сэндвич', 'тост', 'салат', 'суфле', 'овсян', 'паштет', 'закуска']
@@ -220,7 +344,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 return [...surveyExcludes, ...customExcludes, ...settingsExcludes]
                     .map(term => term.toLowerCase())
-                    .filter(term => term && !term.includes('стоп-лист пуст'));
+                    .filter(term => term && !term.includes('исключения не выбраны'));
             }
 
             function getSelectedCuisines() {
@@ -231,12 +355,34 @@ document.addEventListener('DOMContentLoaded', () => {
             function recipeMatchesStopTerm(recipe, term) {
                 const text = getRecipeSearchText(recipe);
                 if (!term) return false;
+                if (term.includes('мясо крас') || term.includes('красное мяс')) return recipeHasAny(recipe, recipeKeywordGroups.redMeat);
+                if (term.includes('мясо любое')) return recipeHasAny(recipe, recipeKeywordGroups.meat);
+                if (term.includes('свин')) return recipeHasAny(recipe, recipeKeywordGroups.pork);
+                if (term.includes('кур')) return recipeHasAny(recipe, recipeKeywordGroups.chicken);
+                if (term.includes('творог')) return recipeHasAny(recipe, recipeKeywordGroups.dairy);
+                if (term.includes('субпродукт')) return recipeHasAny(recipe, recipeKeywordGroups.offal);
+                if (term.includes('полуфабрикат')) return recipeHasAny(recipe, recipeKeywordGroups.prepared);
+                if (term.includes('суп')) return recipeHasAny(recipe, recipeKeywordGroups.soups);
+                if (term.includes('картоф')) return recipeHasAny(recipe, recipeKeywordGroups.potatoes);
+                if (term.includes('греч')) return recipeHasAny(recipe, recipeKeywordGroups.buckwheat);
+                if (term.includes('свек') || term.includes('свёк')) return recipeHasAny(recipe, recipeKeywordGroups.beetroot);
+                if (term.includes('макарон')) return recipeHasAny(recipe, recipeKeywordGroups.pasta);
+                if (term.includes('перец')) return recipeHasAny(recipe, recipeKeywordGroups.pepper);
+                if (term.includes('изюм')) return recipeHasAny(recipe, recipeKeywordGroups.raisins);
+                if (term.includes('рис')) return recipeHasAny(recipe, recipeKeywordGroups.rice);
+                if (term.includes('добавленный сахар') || term.includes('сахар')) return recipeHasAny(recipe, recipeKeywordGroups.sugar);
+                if (term.includes('бобов')) return recipeHasAny(recipe, recipeKeywordGroups.legumes);
+                if (term.includes('баклаж')) return recipeHasAny(recipe, recipeKeywordGroups.eggplants);
+                if (term.includes('паслен') || term.includes('паслён')) return recipeHasAny(recipe, recipeKeywordGroups.nightshades);
+                if (term.includes('дрожж')) return recipeHasAny(recipe, recipeKeywordGroups.yeast);
+                if (term.includes('сульфит') || term.includes('диоксид серы')) return recipeHasAny(recipe, recipeKeywordGroups.sulfites);
+                if (term.includes('аспартам')) return recipeHasAny(recipe, recipeKeywordGroups.aspartame);
                 if (term.includes('мяс')) return recipeHasAny(recipe, recipeKeywordGroups.meat);
-                if (term.includes('рыб') || term.includes('морепродукт')) return recipeHasAny(recipe, recipeKeywordGroups.fish);
+                if (term.includes('рыб') || term.includes('морепродукт') || term.includes('моллюск') || term.includes('ракообраз')) return recipeHasAny(recipe, recipeKeywordGroups.fish);
                 if (term.includes('лакт') || term.includes('молок')) return recipeHasAny(recipe, recipeKeywordGroups.dairy);
-                if (term.includes('глют') || term.includes('мук')) return recipeHasAny(recipe, recipeKeywordGroups.gluten);
+                if (term.includes('глют') || term.includes('мук') || term.includes('муч')) return recipeHasAny(recipe, recipeKeywordGroups.gluten);
                 if (term.includes('яйц')) return recipeHasAny(recipe, recipeKeywordGroups.eggs);
-                if (term.includes('орех')) return recipeHasAny(recipe, recipeKeywordGroups.nuts);
+                if (term.includes('орех') || term.includes('арахис')) return recipeHasAny(recipe, recipeKeywordGroups.nuts);
                 if (term.includes('соя') || term.includes('соев')) return recipeHasAny(recipe, recipeKeywordGroups.soy);
                 if (term.includes('кунжут')) return recipeHasAny(recipe, recipeKeywordGroups.sesame);
                 if (term.includes('горч')) return recipeHasAny(recipe, recipeKeywordGroups.mustard);
@@ -428,8 +574,10 @@ document.addEventListener('DOMContentLoaded', () => {
                         const mealPrice = card.dataset.price || getRecipePrice(recipe, kbjuIdx);
                         back.innerHTML = makeKbjuHtml(k, p, f, c, mealName, mealPrice);
                         if (recipe) applyRecipeToCard(card, recipe, { updateTitle: false });
+                        syncMealFrontNutrition(card);
                         kbjuIdx++;
                     }
+                    syncMealFrontNutrition(card);
                     return;
                 }
                 // Flat card — wrap contents with inner/front/back
@@ -440,6 +588,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const mealPrice = card.dataset.price || getRecipePrice(recipe, kbjuIdx);
                 const kd = getRecipeKbju(recipe, kbjuIdx);
                 kbjuIdx++;
+                card.dataset.kcal = String(kd[0]);
+                card.dataset.prot = String(kd[1]);
+                card.dataset.fat = String(kd[2]);
+                card.dataset.carb = String(kd[3]);
+                card.dataset.price = String(mealPrice);
 
                 const inner = document.createElement('div');
                 inner.className = 'gm_meal_card_inner';
@@ -462,6 +615,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 inner.appendChild(back);
                 card.appendChild(inner);
                 if (recipe) applyRecipeToCard(card, recipe, { updateTitle: false });
+                syncMealFrontNutrition(card);
             });
 
 
@@ -598,6 +752,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     `;
                     if (recipe) applyRecipeToCard(newCard, recipe, { updateTitle: false });
+                    syncMealFrontNutrition(newCard);
                     kbjuIdx++;
 
                     attachDragEvents(newCard);
@@ -873,13 +1028,27 @@ document.addEventListener('DOMContentLoaded', () => {
             restoreSurveySelectionsFromStorage();
 
             // --- ИНИЦИАЛИЗАЦИЯ (СТАРТОВОЕ СОСТОЯНИЕ) ---
+            const storedPreferencesOnStart = readStoredPreferences();
+            const hasCompletedSurveyOnStart = false;
+
+            if (storedPreferencesOnStart.surveyCompleted) {
+                try {
+                    localStorage.setItem(preferencesStorageKey, JSON.stringify({
+                        ...storedPreferencesOnStart,
+                        surveyCompleted: false
+                    }));
+                } catch (error) {
+                    // Если localStorage недоступен, просто показываем базовое состояние в текущей сессии.
+                }
+            }
+
             surveyStep1.style.display = 'none';
             surveyStep2.style.display = 'none';
             settingsMenu.style.display = 'none';
 
             generatedMenu.style.display = 'block';
-            if (gmInfoBox) gmInfoBox.style.display = 'none';
-            if (gmMiniSurveyBlock) gmMiniSurveyBlock.style.display = 'flex';
+            if (gmInfoBox) gmInfoBox.style.display = hasCompletedSurveyOnStart ? 'flex' : 'none';
+            if (gmMiniSurveyBlock) gmMiniSurveyBlock.style.display = hasCompletedSurveyOnStart ? 'none' : 'grid';
             if (gmSavePrefsBox) gmSavePrefsBox.style.display = 'none';
             if (profilePage) profilePage.style.display = 'none';
             // ---------------------------------------------
@@ -936,7 +1105,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (gmPresetsWrapper) gmPresetsWrapper.setAttribute('aria-hidden', hidden ? 'true' : 'false');
             }
 
-            setPresetControlsHidden(Boolean(readStoredPreferences().surveyCompleted));
+            setPresetControlsHidden(hasCompletedSurveyOnStart);
 
             function openSurveyFlow(event) {
                 if (event) event.preventDefault();
@@ -1548,6 +1717,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const card = document.createElement('div');
                 card.className = 'gm_meal_card';
                 card.dataset.generatedBySettings = 'true';
+                card.dataset.kcal = String(kd[0]);
+                card.dataset.prot = String(kd[1]);
+                card.dataset.fat = String(kd[2]);
+                card.dataset.carb = String(kd[3]);
+                card.dataset.price = String(price);
                 card.innerHTML = `
                     <div class="gm_swap_icon">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1576,6 +1750,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 `;
                 if (recipe) applyRecipeToCard(card, recipe, { updateTitle: false });
+                syncMealFrontNutrition(card);
                 attachDragEvents(card);
                 return card;
             }
@@ -2101,6 +2276,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 card.addEventListener('click', () => {
                     card.classList.toggle('selected');
                     savePreferenceState({ stopListTouched: true });
+                    renderCustomExcludeSuggestions();
                 });
             });
 
@@ -2108,6 +2284,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const customInput = document.querySelector('.custom_exclude_input');
             const addCustomBtn = document.querySelector('.btn_add_custom');
             const customTagsWrap = document.getElementById('customExcludeTags');
+            const customExcludeSuggestions = document.getElementById('customExcludeSuggestions');
 
             function addCustomExcludeTag(value, options = {}) {
                 const val = String(value || '').trim();
@@ -2129,6 +2306,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     tag.remove();
                     savePreferenceState({ stopListTouched: true });
                     applyActivePreset({ animate: false });
+                    renderCustomExcludeSuggestions();
                 });
                 customTagsWrap.appendChild(tag);
                 if (!options.silent) savePreferenceState({ stopListTouched: true });
@@ -2138,6 +2316,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (e) e.preventDefault();
                 addCustomExcludeTag(customInput.value);
                 customInput.value = '';
+                renderCustomExcludeSuggestions();
             };
 
             if (addCustomBtn && customInput) {
@@ -2155,7 +2334,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 .filter(term => !surveyExcludePresetTerms.has(normalizePreferenceTerm(term)))
                 .forEach(term => addCustomExcludeTag(term, { silent: true }));
 
-            // --- ЛОГИКА ДОБАВЛЕНИЯ ТЕГОВ В НАСТРОЙКАХ (СТОП-ЛИСТ) ---
+            // --- ЛОГИКА ДОБАВЛЕНИЯ ТЕГОВ В НАСТРОЙКАХ (ИСКЛЮЧЕНИЯ) ---
             const smStopInput = document.querySelector('.sm_stop_input');
             const smStopAddBtn = document.querySelector('.sm_stop_add_btn');
             const smStopTagsWrap = document.querySelector('.sm_stop_tags');
@@ -2170,15 +2349,68 @@ document.addEventListener('DOMContentLoaded', () => {
                 'Глютен', 'Лактоза', 'Молоко', 'Яйца', 'Орехи', 'Морепродукты',
                 'Рыба', 'Мясо', 'Соя', 'Кунжут', 'Горчица', 'Сельдерей',
                 'Чеснок', 'Лук', 'Томаты', 'Острое', 'Кофеин', 'Шоколад',
-                'Мёд', 'Цитрусовые', 'Грибы'
+                'Мед', 'Цитрусовые', 'Грибы'
+            ];
+
+            const foodExclusionSuggestions = [
+                'Творог', 'Субпродукты', 'Полуфабрикаты', 'Супы', 'Мясо красное', 'Мясо любое',
+                'Аспартам', 'Диоксид серы (сульфиты)', 'Свинина', 'Картофель', 'Гречка',
+                'Помидоры', 'Свекла', 'Курица', 'Макароны', 'Перец', 'Изюм', 'Рис',
+                'Продукты с лактозой', 'Добавленный сахар', 'Мучное', 'Арахис',
+                'Моллюски', 'Ракообразные', 'Молоко (молочный белок)',
+                'Баклажаны', 'Бобовые', 'Дрожжи', 'Пасленовые'
             ];
 
             const stopSuggestionItems = uniquePreferenceList([
                 ...commonAllergenSuggestions,
+                ...foodExclusionSuggestions,
                 ...recipeCatalog.flatMap(recipe => Array.isArray(recipe.ingredients)
                     ? recipe.ingredients.map(getIngredientSuggestionName)
                     : [])
             ]).sort((a, b) => a.localeCompare(b, 'ru'));
+
+            function getCurrentSurveyExcludeTermsSet() {
+                const selectedCards = Array.from(document.querySelectorAll('.exclude_card.selected .exclude_card_title'))
+                    .map(item => normalizePreferenceTerm(item.innerText));
+                const customTags = Array.from(document.querySelectorAll('.custom_tag'))
+                    .map(tag => normalizePreferenceTerm(getPlainTagText(tag)));
+
+                return new Set([...selectedCards, ...customTags].filter(Boolean));
+            }
+
+            function renderCustomExcludeSuggestions() {
+                if (!customExcludeSuggestions || !customInput) return;
+
+                const query = normalizePreferenceTerm(customInput.value);
+                const selectedTerms = getCurrentSurveyExcludeTermsSet();
+                const popularLimit = query ? 12 : 10;
+                const visibleItems = stopSuggestionItems
+                    .filter(item => !selectedTerms.has(normalizePreferenceTerm(item)))
+                    .filter(item => !query || normalizePreferenceTerm(item).includes(query))
+                    .slice(0, popularLimit);
+
+                customExcludeSuggestions.innerHTML = visibleItems.map(item => (
+                    `<button class="custom_exclude_suggestion" type="button" data-value="${escapeHtml(item)}">${escapeHtml(item)}</button>`
+                )).join('');
+                customExcludeSuggestions.classList.toggle('visible', visibleItems.length > 0);
+
+                customExcludeSuggestions.querySelectorAll('.custom_exclude_suggestion').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        addCustomExcludeTag(btn.dataset.value);
+                        customInput.value = '';
+                        customInput.focus();
+                        renderCustomExcludeSuggestions();
+                    });
+                });
+            }
+
+            if (customInput && customExcludeSuggestions) {
+                customInput.addEventListener('focus', renderCustomExcludeSuggestions);
+                customInput.addEventListener('input', renderCustomExcludeSuggestions);
+                customInput.addEventListener('blur', () => {
+                    setTimeout(() => customExcludeSuggestions.classList.remove('visible'), 120);
+                });
+            }
 
             function getCurrentStopTermsSet() {
                 return new Set(Array.from(document.querySelectorAll('.sm_stop_tag')).map(tag => normalizePreferenceTerm(getPlainTagText(tag))));
@@ -2217,7 +2449,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!hasTags && !emptyState) {
                     emptyState = document.createElement('div');
                     emptyState.className = 'sm_stop_empty';
-                    emptyState.textContent = 'Стоп-лист пуст';
+                    emptyState.textContent = 'Исключения не выбраны';
                     smStopTagsWrap.appendChild(emptyState);
                 }
 
@@ -2236,7 +2468,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     ? valueOrEvent.trim()
                     : smStopInput.value.trim();
                 if (!val) {
-                    showStopHint('Сначала введите ингредиент, например: кинза, орехи или лактоза.');
+                    showStopHint('Сначала введите продукт, например: свинина, грибы или лук.');
                     smStopInput.focus();
                     return;
                 }
@@ -2273,7 +2505,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (smStopAddBtn && smStopInput) {
                 smStopAddBtn.addEventListener('click', addSmStopTag);
                 smStopInput.addEventListener('focus', () => {
-                    showStopHint('Введите ингредиент и нажмите «+» или Enter.');
+                    showStopHint('Введите продукт и нажмите «+» или Enter.');
                     renderStopSuggestions();
                 });
                 smStopInput.addEventListener('input', () => {

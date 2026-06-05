@@ -1347,42 +1347,16 @@
                         <div class="survey_title_row" style="margin-bottom: 8px;">
                             <h2 class="survey_title">Что исключить из рациона?</h2>
                         </div>
-                        <div class="survey_subtitle" style="color: #666; margin-bottom: 32px; font-size: 16px;">Нажмите,
-                            чтобы исключить. Можно и пропустить.</div>
-
-                        <div class="exclude_grid" id="excludeGrid">
-                            <div class="exclude_card">
-                                <div class="exclude_icon"><img src="photos/глютен.png" alt="Глютен"></div>
-                                <div class="exclude_card_title">Глютен</div>
-                            </div>
-                            <div class="exclude_card">
-                                <div class="exclude_icon"><img src="photos/лактоза.png" alt="Лактоза"></div>
-                                <div class="exclude_card_title">Лактоза</div>
-                            </div>
-                            <div class="exclude_card">
-                                <div class="exclude_icon"><img src="photos/Мясо.png" alt="Мясо"></div>
-                                <div class="exclude_card_title">Мясо</div>
-                            </div>
-                            <div class="exclude_card">
-                                <div class="exclude_icon"><img src="photos/Рыба.png" alt="Морепродукты"></div>
-                                <div class="exclude_card_title">Морепродукты</div>
-                            </div>
-                            <div class="exclude_card">
-                                <div class="exclude_icon"><img src="photos/Яйца.png" alt="Яйца"></div>
-                                <div class="exclude_card_title">Яйца</div>
-                            </div>
-                            <div class="exclude_card">
-                                <div class="exclude_icon"><img src="photos/Орехи.png" alt="Орехи"></div>
-                                <div class="exclude_card_title">Орехи</div>
-                            </div>
-                        </div>
+                        <div class="survey_subtitle" style="color: #666; margin-bottom: 32px; font-size: 16px;">
+                            Добавьте продукты, которые нужно исключить. Можно и пропустить.</div>
 
                         <div class="custom_exclude_wrap">
-                            <div class="custom_exclude_label">Свой продукт или аллерген</div>
+                            <div class="custom_exclude_label">Исключения</div>
                             <div class="custom_exclude_input_row">
-                                <input type="text" class="custom_exclude_input" placeholder="Например, кинза...">
+                                <input type="text" class="custom_exclude_input" placeholder="Например, свинина...">
                                 <button class="btn_add_custom">+ Добавить</button>
                             </div>
+                            <div class="custom_exclude_suggestions" id="customExcludeSuggestions"></div>
                             <div class="custom_exclude_tags" id="customExcludeTags"></div>
                         </div>
 
@@ -1540,6 +1514,12 @@
                             </div>
                         </div>
 
+                        <!-- Description -->
+                        <div class="gm_description">
+                            Мы собрали для вас разнообразное и полезное меню на неделю. Подстройте его под себя —
+                            замените блюда, исключите ненужные продукты или поставьте день без готовки.
+                        </div>
+
                         <!-- Блок УСПЕХА (Скрыт по умолчанию) -->
                         <div class="gm_info_box" id="gmInfoBox" style="display: none;">
                             <div class="gm_info_text">
@@ -1552,7 +1532,7 @@
                                 </svg>
                                 <div class="gm_info_text_inner">
                                     <h3>Меню персонализировано</h3>
-                                    <p>На основе ваших предпочтений. Можно уточнить в любой момент.</p>
+                                    <p>На основе ваших предпочтений.<br>Можно уточнить в любой момент.</p>
                                 </div>
                             </div>
                             <button class="gm_info_btn" id="retakeSurveyBtn" type="button">Пройти заново</button>
@@ -1579,30 +1559,12 @@
 
                         <!-- Блок МИНИ-ОПРОСА (Показывается неавторизованным/непрошедшим) -->
                         <div class="mini_survey_block" id="gmMiniSurveyBlock">
-                            <div class="mini_survey_icon">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A1A1A"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="8" y1="6" x2="21" y2="6"></line>
-                                    <line x1="8" y1="12" x2="21" y2="12"></line>
-                                    <line x1="8" y1="18" x2="21" y2="18"></line>
-                                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                                </svg>
-                            </div>
                             <div class="mini_survey_content">
-                                <div class="mini_survey_meta">Мини-опрос · 30 сек</div>
                                 <div class="mini_survey_title">Подберём меню под вас за 30 секунд</div>
                                 <p class="mini_survey_desc">Ответьте на пару вопросов — уберём то, что не подходит, и
                                     добавим любимое.</p>
                             </div>
                             <button class="btn_take_survey" id="openSurveyFromGmBtn">Пройти</button>
-                        </div>
-
-                        <!-- Description -->
-                        <div class="gm_description">
-                            Мы собрали для вас разнообразное и полезное меню на неделю. Подстройте его под себя —
-                            замените блюда, исключите ненужные продукты или поставьте день без готовки.
                         </div>
 
                         <!-- Presets -->
@@ -2221,16 +2183,16 @@
                             </div>
                         </div>
 
-                        <div class="sm_section_title">Стоп-лист</div>
+                        <div class="sm_section_title">Исключения</div>
                         <div class="sm_stop_tags">
                             <!-- По дефолту пусто -->
                         </div>
                         <div class="sm_stop_input_row">
-                            <input type="text" class="sm_stop_input" placeholder="Введите аллерген или ингредиент...">
+                            <input type="text" class="sm_stop_input" placeholder="Введите продукт...">
                             <button class="sm_stop_add_btn">+</button>
                         </div>
                         <div class="sm_stop_suggestions" id="smStopSuggestions"></div>
-                        <div class="sm_stop_hint" id="smStopHint">Введите ингредиент и нажмите «+» или Enter.</div>
+                        <div class="sm_stop_hint" id="smStopHint">Введите продукт и нажмите «+» или Enter.</div>
 
                         <div class="sm_section_title">Приёмов в день</div>
                         <div class="sm_btn_row" data-setting="meals">
