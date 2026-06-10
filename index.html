@@ -1259,6 +1259,15 @@
                         </div>
                     </div>
 
+                    <button class="fab_cart" id="openChecklistBtn" type="button" aria-label="Открыть корзину по рецептам">
+                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="9" cy="21" r="1"></circle>
+                            <circle cx="20" cy="21" r="1"></circle>
+                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                        </svg>
+                        <span class="fab_cart_badge">4 250 ₽</span>
+                    </button>
+
                     <div class="survey_step_wrapper">
                         <div class="survey_header">
                             <button class="survey_back_btn" id="surveyBackBtn">
@@ -1586,7 +1595,18 @@
                             </button>
                         </div>
 
-                        <div class="gm_grid_wrapper">
+                        <div class="gm_grid_carousel">
+                            <button class="gm_grid_nav gm_grid_nav_prev" id="gmGridPrev" type="button" aria-label="Предыдущий день">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="15 18 9 12 15 6"></polyline>
+                                </svg>
+                            </button>
+                            <button class="gm_grid_nav gm_grid_nav_next" id="gmGridNext" type="button" aria-label="Следующий день">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                    <polyline points="9 18 15 12 9 6"></polyline>
+                                </svg>
+                            </button>
+                            <div class="gm_grid_wrapper">
                             <div class="gm_grid_header">
                                 <div></div>
                                 <div>ЗАВТРАК</div>
@@ -2089,6 +2109,7 @@
                             <div class="gm_hide_more" id="gmHideMoreBtn">
                                 &uarr; скрыть
                             </div>
+                        </div>
                         </div>
 
                     </div>

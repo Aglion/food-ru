@@ -1139,6 +1139,68 @@
             padding: 32px;
         }
 
+        .gm_grid_carousel {
+            position: relative;
+        }
+
+        .gm_grid_nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            background: #fff;
+            border: 1px solid #EBEBEB;
+            box-shadow: 0 6px 18px rgba(36, 31, 32, 0.12);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            color: #241F20;
+            z-index: 20;
+            padding: 0;
+            outline: none;
+            -webkit-appearance: none;
+            appearance: none;
+            transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .gm_grid_nav_prev {
+            left: -22px;
+        }
+
+        .gm_grid_nav_next {
+            right: -22px;
+        }
+
+        .gm_grid_nav:hover:not(:disabled) {
+            background: #FFD400;
+            border-color: #FFD400;
+            transform: translateY(-50%) scale(1.06);
+            box-shadow: 0 10px 22px rgba(36, 31, 32, 0.18);
+        }
+
+        .gm_grid_nav:active:not(:disabled) {
+            transform: translateY(-50%) scale(0.96);
+        }
+
+        .gm_grid_nav:focus-visible {
+            box-shadow: 0 6px 18px rgba(36, 31, 32, 0.12), 0 0 0 3px rgba(255, 212, 0, 0.45);
+        }
+
+        .gm_grid_nav:disabled {
+            opacity: 0.35;
+            cursor: not-allowed;
+            box-shadow: 0 2px 6px rgba(36, 31, 32, 0.06);
+        }
+
+        @media (max-width: 767px) {
+            .gm_grid_nav {
+                display: none;
+            }
+        }
+
         .gm_grid_header {
             display: grid;
             grid-template-columns: 30px 1fr 1fr 1fr;
@@ -2278,6 +2340,8 @@
             width: 64px;
             height: 64px;
             background: #398829;
+            border: none;
+            outline: none;
             border-radius: 50%;
             display: flex;
             align-items: center;
@@ -2287,6 +2351,15 @@
             z-index: 900;
             transition: transform 0.2s;
             color: #fff;
+            padding: 0;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+
+        .fab_cart:focus,
+        .fab_cart:focus-visible {
+            outline: none;
+            box-shadow: 0 4px 16px rgba(57, 136, 41, 0.4), 0 0 0 3px rgba(57, 136, 41, 0.25);
         }
 
         .fab_cart:hover {

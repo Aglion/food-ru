@@ -3005,4 +3005,32 @@ document.addEventListener('DOMContentLoaded', () => {
                     }, 1000);
                 }, 800);
             });
+
+            // навигация по дням стрелками
+            const gridWrapper = document.querySelector('.gm_grid_wrapper');
+            const gridPrev = document.getElementById('gmGridPrev');
+            const gridPrevNext = document.getElementById('gmGridNext');
+            if (gridWrapper && gridPrev && gridPrevNext) {
+                const getStep = () => {
+                    const row = gridWrapper.querySelector('.gm_grid_row');
+                    if (!row) return gridWrapper.clientWidth;
+                    const rect = row.getBoundingClientRect();
+                    const gap = parseFloat(getComputedStyle(gridWrapper).gap) || 0;
+                    return rect.width + gap;
+                };
+                const updateNavState = () => {
+                    const max = gridWrapper.scrollWidth - gridWrapper.clientWidth;
+                    gridPrev.disabled = gridWrapper.scrollLeft <= 4;
+                    gridPrevNext.disabled = gridWrapper.scrollLeft >= max - 4;
+                };
+                gridPrev.addEventListener('click', () => {
+                    gridWrapper.scrollBy({ left: -getStep(), behavior: 'smooth' });
+                });
+                gridPrevNext.addEventListener('click', () => {
+                    gridWrapper.scrollBy({ left: getStep(), behavior: 'smooth' });
+                });
+                gridWrapper.addEventListener('scroll', updateNavState, { passive: true });
+                window.addEventListener('resize', updateNavState);
+                updateNavState();
+            }
         });
