@@ -1,26 +1,14 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-            // === КБЖУ GRID HELPER ===
             function makeKbjuHtml(kcal, prot, fat, carb, name, price) {
-                name = name || 'Блюдо';
-                return `<div class="kbju_back_top">
-            <span class="kbju_back_name">${name}</span>
-            <span class="kbju_price">на 100 г</span>
-        </div>
-        <div class="kbju_back_row">
-            <div class="kbju_nut"><div class="kbju_nut_val">${kcal}</div><div class="kbju_nut_label">ККАЛ</div></div>
-            <div class="kbju_nut"><div class="kbju_nut_val">${prot}г</div><div class="kbju_nut_label">БЕЛКИ</div></div>
-            <div class="kbju_nut"><div class="kbju_nut_val">${fat}г</div><div class="kbju_nut_label">ЖИРЫ</div></div>
-            <div class="kbju_nut"><div class="kbju_nut_val">${carb}г</div><div class="kbju_nut_label">УГЛЕВ</div></div>
-        </div>`;
+                return '';
             }
 
-            function makeMealNutritionHtml(kcal, prot, fat, carb) {
-                return `<div class="gm_meal_nutrition" aria-label="КБЖУ на 100 г">
-                    <span><b>${kcal}</b><small>ккал</small></span>
-                    <span><b>${prot}г</b><small>белки</small></span>
-                    <span><b>${fat}г</b><small>жиры</small></span>
-                    <span><b>${carb}г</b><small>углев.</small></span>
+            function makeMealNutritionHtml(kcal, grams, isReadyMeal) {
+                const gramsHtml = isReadyMeal && grams ? `<span>${grams} г</span>` : '';
+                return `<div class="gm_meal_nutrition" aria-label="Калорийность блюда">
+                    <span>${kcal} ккал</span>
+                    ${gramsHtml}
                 </div>`;
             }
 
@@ -28,19 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!card) return;
                 const info = card.querySelector('.gm_meal_info');
                 if (!info) return;
-
-                const kcal = card.dataset.kcal || '0';
-                const prot = card.dataset.prot || '0';
-                const fat = card.dataset.fat || '0';
-                const carb = card.dataset.carb || '0';
                 const existing = info.querySelector('.gm_meal_nutrition');
-                const html = makeMealNutritionHtml(kcal, prot, fat, carb);
-
-                if (existing) {
-                    existing.outerHTML = html;
-                } else {
-                    info.insertAdjacentHTML('beforeend', html);
-                }
+                if (existing) existing.remove();
             }
             const defaultPrices = [85, 120, 150, 95, 110, 105, 90, 130, 160, 75, 140, 125, 85, 115, 180, 90, 145, 105, 90, 135, 70];
             const defaultKbju = [
@@ -52,6 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
             let kbjuIdx = 0;
             const mealSlotLabels = ['ЗАВТРАК', 'ОБЕД', 'УЖИН', 'ПЕРЕКУС', 'ПЕРЕКУС 2', 'ПЕРЕКУС 3'];
             const mealSlotCategories = ['breakfast', 'lunch', 'dinner', 'snack', 'snack', 'snack'];
+            const dayFullNames = ['Понедельник', 'Вторник', 'Среда', 'Четверг', 'Пятница', 'Суббота', 'Воскресенье'];
             const dayIndexesByShortName = {
                 'пн': 0,
                 'вт': 1,
@@ -74,6 +52,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const categoryButtons = document.querySelectorAll('.categoryHeader_button__nGpLJ');
                 const desktopQuery = window.matchMedia('(min-width: 1281px)');
                 let overlay = document.querySelector('.food_nav_overlay');
+                let closeButton = null;
 
                 if (!overlay) {
                     overlay = document.createElement('div');
@@ -83,10 +62,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (asideColumn) {
                     asideColumn.id = asideColumn.id || 'foodSideNavigation';
+                    closeButton = asideColumn.querySelector('.food_nav_close');
+
+                    if (!closeButton) {
+                        closeButton = document.createElement('button');
+                        closeButton.className = 'food_nav_close';
+                        closeButton.type = 'button';
+                        closeButton.setAttribute('aria-label', 'Закрыть меню');
+                        closeButton.setAttribute('aria-hidden', 'true');
+                        closeButton.tabIndex = -1;
+                        closeButton.innerHTML = '<span aria-hidden="true">×</span>';
+                        asideColumn.prepend(closeButton);
+                    }
                 }
 
                 function setDrawerOpen(isOpen) {
                     document.body.classList.toggle('food_nav_open', isOpen);
+                    if (closeButton) {
+                        closeButton.setAttribute('aria-hidden', String(!isOpen));
+                        closeButton.tabIndex = isOpen ? 0 : -1;
+                    }
                     if (navToggle) {
                         navToggle.setAttribute('aria-expanded', String(isOpen));
                         if (asideColumn) navToggle.setAttribute('aria-controls', asideColumn.id);
@@ -121,6 +116,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     navToggle.addEventListener('click', () => {
                         setDrawerOpen(!document.body.classList.contains('food_nav_open'));
                     });
+                }
+
+                if (closeButton) {
+                    closeButton.addEventListener('click', () => setDrawerOpen(false));
                 }
 
                 overlay.addEventListener('click', () => setDrawerOpen(false));
@@ -558,10 +557,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     .sort((a, b) => b.score - a.score)[0]?.recipe || candidates[0] || null;
             }
 
-            // === UPGRADE FLAT GM_MEAL_CARDS ===
             document.querySelectorAll('.gm_meal_card').forEach(card => {
                 if (card.querySelector('.gm_meal_card_inner')) {
-                    // Already has structure — just fill the back
+
                     const back = card.querySelector('.gm_meal_back');
                     if (back && !back.querySelector('.kbju_back_row')) {
                         const nameEl = card.querySelector('.gm_meal_title');
@@ -580,7 +578,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     syncMealFrontNutrition(card);
                     return;
                 }
-                // Flat card — wrap contents with inner/front/back
+
                 const swap = card.querySelector('.gm_swap_icon');
                 const nameEl = card.querySelector('.gm_meal_title');
                 const mealName = nameEl ? nameEl.textContent.trim() : '';
@@ -599,10 +597,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 const front = document.createElement('div');
                 front.className = 'gm_meal_front';
-                // Move all children into front
+
                 while (card.firstChild) front.appendChild(card.firstChild);
 
-                // Move swap back to the card level so it isn't flipped
                 if (swap) {
                     card.appendChild(swap);
                 }
@@ -620,7 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-            // --- МОДАЛЬНОЕ ОКНО ЗАМЕНЫ/ДОБАВЛЕНИЯ БЛЮДА ---
+            // модальное окно замены или добавления блюда
             const replaceModal = document.getElementById('replaceModal');
             const closeReplaceModal = document.getElementById('closeReplaceModal');
             const replaceSearchInput = document.querySelector('.replace_search_input');
@@ -630,8 +627,8 @@ document.addEventListener('DOMContentLoaded', () => {
             replaceEmptyState.textContent = 'Ничего не нашли. Попробуйте другой запрос.';
             if (replaceListContainer) replaceListContainer.appendChild(replaceEmptyState);
 
-            let activeActionType = null; // 'replace' | 'add'
-            let activeActionTarget = null; // HTMLElement
+            let activeActionType = null;
+            let activeActionTarget = null;
             let activeReplaceCategory = null;
 
             function filterReplaceList() {
@@ -658,7 +655,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 activeActionTarget = target;
                 document.querySelector('.replace_modal_title').innerText = type === 'replace' ? 'Заменить блюдо' : 'Добавить блюдо';
 
-                // Получаем категорию из родительского столбца
                 const col = target.closest('.gm_meal_col');
                 const columnCategory = col ? col.getAttribute('data-category') : null;
                 activeReplaceCategory = ['breakfast', 'lunch', 'dinner'].includes(columnCategory) ? columnCategory : null;
@@ -768,7 +764,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            // === ДОБАВЛЕНИЕ КНОПКИ "+ ДОБАВИТЬ БЛЮДО" В СЕТКУ МЕНЮ ===
+            // Добавить блюдо
             document.querySelectorAll('.gm_grid_row').forEach((row, dayIndex) => {
                 row.dataset.dayIndex = String(dayIndex);
                 const children = Array.from(row.children);
@@ -779,7 +775,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     col.className = 'gm_meal_col';
                     col.dataset.mealIndex = String(index);
 
-                    // Назначаем категорию в зависимости от колонки
                     const slot = getMealSlot(index);
                     col.setAttribute('data-category', slot.category);
                     col.setAttribute('data-label', slot.label);
@@ -795,7 +790,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            // --- ЛОГИКА ПЕРЕТАСКИВАНИЯ КАРТОЧЕК ---
+            // Логика перетаскивания карточек (убрали)
             let draggedCard = null;
 
             function attachDragEvents(card) {
@@ -822,7 +817,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 deleteIcon.addEventListener('click', (e) => {
                     e.stopPropagation();
+                    const row = card.closest('.gm_grid_row');
                     card.remove();
+                    if (row && !row.querySelector('.gm_meal_card')) {
+                        const dayIndex = Number(row.dataset.dayIndex);
+                        if (Number.isFinite(dayIndex)) settingsState.menuOffDays.add(dayIndex);
+                        setMenuDayOff(row, true, { animate: true });
+                    }
                     syncMenuAfterRecipeChange();
                 });
 
@@ -881,21 +882,17 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             document.querySelectorAll('.gm_meal_card').forEach(attachDragEvents);
-            // ----------------------------------------
 
-            // Получаем ссылки на основные блоки
             const surveyStep1 = document.querySelector('.survey_step_wrapper');
             const surveyStep2 = document.querySelector('.survey_step_2_wrapper');
             const generatedMenu = document.querySelector('.generated_menu_wrapper');
             const settingsMenu = document.querySelector('.settings_menu_wrapper');
             const profilePage = document.getElementById('profilePage');
 
-            // Элементы для баннеров персонализации
             const gmInfoBox = document.getElementById('gmInfoBox');
             const gmMiniSurveyBlock = document.getElementById('gmMiniSurveyBlock');
             const gmSavePrefsBox = document.getElementById('gmSavePrefsBox');
 
-            // Кнопки
             const backBtn1 = document.getElementById('surveyBackBtn');
             const continueBtn1 = document.getElementById('surveyContinueBtn');
             const backBtn2 = document.getElementById('surveyBackBtn2');
@@ -915,7 +912,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const gmWrapper = document.querySelector('.generated_menu_wrapper');
             const gmPresetsWrapper = document.querySelector('.gm_presets_wrapper');
 
-            // Карточки
             const cards1 = document.querySelectorAll('.cuisine_card');
             const cards2 = document.querySelectorAll('.exclude_card');
             const preferencesStorageKey = 'food_menu_preferences_v1';
@@ -992,7 +988,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 try {
                     localStorage.setItem(preferencesStorageKey, JSON.stringify(next));
                 } catch (error) {
-                    // Local storage can be unavailable in private mode; подбор всё равно работает в текущей сессии.
                 }
             }
 
@@ -1027,7 +1022,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             restoreSurveySelectionsFromStorage();
 
-            // --- ИНИЦИАЛИЗАЦИЯ (СТАРТОВОЕ СОСТОЯНИЕ) ---
             const storedPreferencesOnStart = readStoredPreferences();
             const hasCompletedSurveyOnStart = false;
 
@@ -1038,7 +1032,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         surveyCompleted: false
                     }));
                 } catch (error) {
-                    // Если localStorage недоступен, просто показываем базовое состояние в текущей сессии.
                 }
             }
 
@@ -1051,7 +1044,6 @@ document.addEventListener('DOMContentLoaded', () => {
             if (gmMiniSurveyBlock) gmMiniSurveyBlock.style.display = hasCompletedSurveyOnStart ? 'none' : 'grid';
             if (gmSavePrefsBox) gmSavePrefsBox.style.display = 'none';
             if (profilePage) profilePage.style.display = 'none';
-            // ---------------------------------------------
 
             function openSettingsModal() {
                 settingsMenu.style.display = 'block';
@@ -1115,7 +1107,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            // Клик "Пройти" опрос из дефолтного меню
             if (openSurveyFromGmBtn) {
                 openSurveyFromGmBtn.addEventListener('click', openSurveyFlow);
             }
@@ -1139,27 +1130,22 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // Возврат из шага 1
             backBtn1.addEventListener('click', () => {
                 surveyStep1.style.display = 'none';
                 generatedMenu.style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
-            // Переход к шагу 2
             continueBtn1.addEventListener('click', () => {
                 surveyStep1.style.display = 'none';
                 surveyStep2.style.display = 'block';
             });
 
-            // Возврат из шага 2 в шаг 1
             backBtn2.addEventListener('click', () => {
                 surveyStep2.style.display = 'none';
                 surveyStep1.style.display = 'block';
             });
 
-            // Успешное завершение опроса
-            // --- ИНТЕГРАЦИЯ X5ID: ПОИСК ЭЛЕМЕНТОВ ---
             const x5idAuthWrapper = document.getElementById('x5idAuthWrapper');
             const fakeSubmitBtn = document.getElementById('fake_submit_button');
             const closeX5Button = document.getElementById('close-x5-button');
@@ -1188,7 +1174,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 savePrefsLaterBtn.addEventListener('click', hideSavePrefsPrompt);
             }
 
-            // Кнопка завершения опроса -> показ персонализированного меню
+            // Кнопка завершения опроса
             finishBtn.addEventListener('click', () => {
                 surveyStep2.style.display = 'none';
                 syncSurveyExcludesToSettings();
@@ -1217,22 +1203,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
-            // Крестик в интерфейсе X5ID (Отмена авторизации)
             if (closeX5Button) {
                 closeX5Button.addEventListener('click', () => {
-                    // Просто скрываем попап и разрешаем пользователю смотреть меню
                     x5idAuthWrapper.style.display = 'none';
-                    document.body.style.overflow = ''; // Возвращаем скролл страницы
+                    document.body.style.overflow = '';
 
                     if (gmInfoBox) gmInfoBox.style.display = 'flex';
                     if (gmMiniSurveyBlock) gmMiniSurveyBlock.style.display = 'none';
                 });
             }
 
-            // Симуляция отправки формы в X5ID (Успешная авторизация)
             if (fakeSubmitBtn) {
                 fakeSubmitBtn.addEventListener('click', (e) => {
-                    e.preventDefault(); // Останавливаем реальную отправку формы
+                    e.preventDefault();
 
                     const btnText = fakeSubmitBtn.querySelector('.submit-text');
                     if (btnText) btnText.innerText = 'Проверка...';
@@ -1242,16 +1225,13 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (btnText) btnText.innerText = 'Отправить код';
                         fakeSubmitBtn.style.opacity = '1';
 
-                        // Скрываем авторизацию
                         x5idAuthWrapper.style.display = 'none';
-                        document.body.style.overflow = ''; // Возвращаем скролл страницы
+                        document.body.style.overflow = '';
 
-                        // Меню уже на фоне, просто убеждаемся, что плашка успеха видна
                         if (gmInfoBox) gmInfoBox.style.display = 'flex';
                         if (gmMiniSurveyBlock) gmMiniSurveyBlock.style.display = 'none';
                         hideSavePrefsPrompt();
 
-                        // Показываем пресет "Для Вас" и сразу включаем его
                         const forYouPreset = document.getElementById('gmPresetForYou');
                         if (forYouPreset) {
                             forYouPreset.style.display = 'flex';
@@ -1261,7 +1241,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         localStorage.setItem(profileAuthStorageKey, 'true');
                         setHeaderLoggedIn(true);
                         showProfilePage();
-                    }, 1000); // 1 секунда имитации загрузки
+                    }, 1000);
                 });
             }
 
@@ -1386,12 +1366,12 @@ document.addEventListener('DOMContentLoaded', () => {
                     applyPresetToMenu(presetName);
                     applyNoCookDaysToMenu();
                     recalculateChartData();
+                    updateDayNutritionSummaries();
                     updateMenuSummary();
                     if (chartContainer) renderChart(activeChartTab);
                 });
             });
 
-            // Сохранение ручных настроек
             applySettingsBtn.addEventListener('click', () => {
                 closeSettingsModal();
                 generatedMenu.style.display = 'block';
@@ -1421,7 +1401,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             }
 
-            // Взаимодействия с UI настроек
 
             // Данные для графиков
             const chartData = {
@@ -1484,11 +1463,12 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             const chartContainer = document.getElementById('smChartContainer');
+            const chartSection = document.getElementById('smChartSection');
             const chartTitle = document.getElementById('smChartTitle');
             const chartTotalLabel = document.getElementById('smChartTotalLabel');
             const chartTotalValue = document.getElementById('smChartTotalValue');
             const gmBannerSubtitle = document.querySelector('.gm_banner_subtitle');
-            const fabCartBadge = document.querySelector('.fab_cart_badge');
+            const cartBadges = document.querySelectorAll('.fab_cart_badge');
             const finalBuyBtn = document.getElementById('btnFinalBuy');
             const chartKeys = Object.keys(chartData);
             const settingsState = {
@@ -1503,6 +1483,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 menuOffDays: new Set()
             };
             let activeChartTab = 'budget';
+            const kbjuSettings = {
+                calories: 2200,
+                protein: 105,
+                fat: 75,
+                carbs: 275,
+                touched: false
+            };
 
             chartKeys.forEach(key => {
                 chartData[key].days.forEach(day => {
@@ -1548,6 +1535,97 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (tabKey === 'time') return formatMinutes(total);
 
                 return data.totalValue;
+            }
+
+            function getCaloriesFromMacros(state = kbjuSettings) {
+                return (Number(state.protein) || 0) * 4 + (Number(state.fat) || 0) * 9 + (Number(state.carbs) || 0) * 4;
+            }
+
+            function formatKbjuValue(value, key) {
+                const number = Number(value) || 0;
+                if (key === 'calories') return Math.round(number).toLocaleString('ru-RU');
+                return number.toFixed(1).replace(/\.0$/, '').replace('.', ',');
+            }
+
+            function parseKbjuValue(value) {
+                const normalized = String(value ?? '')
+                    .replace(/\s/g, '')
+                    .replace(',', '.');
+                const number = Number(normalized);
+                return Number.isFinite(number) ? number : NaN;
+            }
+
+            function getAverageMenuKbju() {
+                const metrics = getMenuDayMetrics().filter(metric => metric.count > 0);
+                if (!metrics.length) return null;
+
+                const totals = metrics.reduce((acc, metric) => {
+                    acc.calories += metric.calories;
+                    acc.protein += metric.protein;
+                    acc.fat += metric.fat;
+                    acc.carbs += metric.carbs;
+                    return acc;
+                }, { calories: 0, protein: 0, fat: 0, carbs: 0 });
+
+                return {
+                    calories: totals.calories / metrics.length,
+                    protein: totals.protein / metrics.length,
+                    fat: totals.fat / metrics.length,
+                    carbs: totals.carbs / metrics.length
+                };
+            }
+
+            function syncKbjuSettingsFromMenu() {
+                if (kbjuSettings.touched) return;
+                const average = getAverageMenuKbju();
+                if (!average) return;
+
+                kbjuSettings.protein = Math.max(40, Math.round(average.protein * 10) / 10);
+                kbjuSettings.fat = Math.max(30, Math.round(average.fat * 10) / 10);
+                kbjuSettings.carbs = Math.max(80, Math.round(average.carbs * 10) / 10);
+                kbjuSettings.calories = Math.round(getCaloriesFromMacros(kbjuSettings));
+            }
+
+            function setKbjuSettingValue(key, value) {
+                const constraints = {
+                    calories: { min: 1200, max: 4500 },
+                    protein: { min: 40, max: 240 },
+                    fat: { min: 30, max: 220 },
+                    carbs: { min: 80, max: 700 }
+                };
+                const clampMacro = (macroKey, macroValue) => {
+                    const macroLimit = constraints[macroKey];
+                    return Math.max(macroLimit.min, Math.min(macroLimit.max, Math.round(macroValue * 10) / 10));
+                };
+                const limit = constraints[key];
+                const parsedValue = parseKbjuValue(value);
+                const nextValue = Math.max(limit.min, Math.min(limit.max, Number.isFinite(parsedValue) ? parsedValue : limit.min));
+
+                kbjuSettings.touched = true;
+
+                if (key === 'calories') {
+                    const currentCalories = getCaloriesFromMacros(kbjuSettings);
+                    if (currentCalories > 0) {
+                        const scale = nextValue / currentCalories;
+                        kbjuSettings.protein = clampMacro('protein', kbjuSettings.protein * scale);
+                        kbjuSettings.fat = clampMacro('fat', kbjuSettings.fat * scale);
+                        kbjuSettings.carbs = clampMacro('carbs', kbjuSettings.carbs * scale);
+                    } else {
+                        kbjuSettings.protein = clampMacro('protein', nextValue * 0.25 / 4);
+                        kbjuSettings.fat = clampMacro('fat', nextValue * 0.3 / 9);
+                        kbjuSettings.carbs = clampMacro('carbs', nextValue * 0.45 / 4);
+                    }
+                } else {
+                    kbjuSettings[key] = clampMacro(key, nextValue);
+                }
+
+                kbjuSettings.calories = Math.round(getCaloriesFromMacros(kbjuSettings));
+                renderChart('kbju');
+            }
+
+            function changeKbjuSettingValue(key, delta) {
+                const current = Number(kbjuSettings[key]) || 0;
+                setKbjuSettingValue(key, current + delta);
             }
 
             function recalculateChartData() {
@@ -1603,9 +1681,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (gmBannerSubtitle) {
                     gmBannerSubtitle.innerText = `${recipesCount} рецептов, ~${formatRub(cartTotal)}`;
                 }
-                if (fabCartBadge) {
-                    fabCartBadge.innerText = formatRub(cartTotal);
-                }
+                cartBadges.forEach((badge) => {
+                    badge.innerText = formatRub(cartTotal);
+                });
                 if (finalBuyBtn) {
                     finalBuyBtn.classList.remove('is_success', 'is_loading');
                     setFinalBuyButtonContent(formatRub(cartTotal));
@@ -1614,6 +1692,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             function syncMenuAfterRecipeChange() {
                 recalculateChartData();
+                updateDayNutritionSummaries();
                 updateMenuSummary();
                 if (chartContainer) renderChart(activeChartTab);
 
@@ -1633,7 +1712,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             function getMenuDayMetrics() {
                 return Array.from(document.querySelectorAll('.gm_grid_row')).map((row, dayIndex) => {
-                    const metric = { budget: 0, calories: 0, protein: 0, time: 0, count: 0, visibleSlots: 0 };
+                    const metric = { budget: 0, calories: 0, protein: 0, fat: 0, carbs: 0, time: 0, count: 0, visibleSlots: 0 };
                     row.querySelectorAll('.gm_meal_col').forEach(col => {
                         if (col.style.display === 'none') return;
                         metric.visibleSlots++;
@@ -1644,11 +1723,47 @@ document.addEventListener('DOMContentLoaded', () => {
                         metric.budget += (Number(card.dataset.price) || 0) * settingsState.portions;
                         metric.calories += (Number(card.dataset.kcal) || 0) * settingsState.portions;
                         metric.protein += (Number(card.dataset.prot) || 0) * settingsState.portions;
+                        metric.fat += (Number(card.dataset.fat) || 0) * settingsState.portions;
+                        metric.carbs += (Number(card.dataset.carb) || 0) * settingsState.portions;
                         metric.time += parseTimeToMinutes(card.querySelector('.gm_meal_time')?.innerText || '');
                     });
 
                     if (settingsState.noCookDays.has(dayIndex)) metric.time = 0;
                     return metric;
+                });
+            }
+
+            function updateDayNutritionSummaries() {
+                document.querySelectorAll('.gm_day_nutrition_summary').forEach(summary => summary.remove());
+                return;
+
+                const dayMetrics = getMenuDayMetrics();
+
+                document.querySelectorAll('.gm_grid_row').forEach((row, dayIndex) => {
+                    const label = row.querySelector('.gm_day_label');
+                    if (!label) return;
+
+                    let summary = label.querySelector('.gm_day_nutrition_summary');
+                    const metric = dayMetrics[dayIndex];
+                    const isOff = settingsState.menuOffDays.has(dayIndex) || row.classList.contains('day_off');
+
+                    if (!metric || isOff || !metric.count) {
+                        if (summary) summary.remove();
+                        return;
+                    }
+
+                    if (!summary) {
+                        summary = document.createElement('span');
+                        summary.className = 'gm_day_nutrition_summary';
+                        label.appendChild(summary);
+                    }
+
+                    summary.innerHTML = `
+                        <span><b>${Math.round(metric.calories).toLocaleString('ru-RU')}</b> ккал</span>
+                        <span>Б ${Math.round(metric.protein)} г</span>
+                        <span>Ж ${Math.round(metric.fat)} г</span>
+                        <span>У ${Math.round(metric.carbs)} г</span>
+                    `;
                 });
             }
 
@@ -1798,6 +1913,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     row.classList.toggle('no_cook_day', isNoCookDay);
                     row.querySelectorAll('.gm_meal_card').forEach(card => {
                         card.classList.toggle('nocook_card', isNoCookDay);
+                        syncMealFrontNutrition(card);
                     });
                 });
             }
@@ -1840,6 +1956,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 button.title = isOff ? 'Вернуть рецепты' : 'Убрать день';
             }
 
+            function animateMenuRowHeight(row, updateDom) {
+                if (!row || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+                    updateDom();
+                    return;
+                }
+
+                const startHeight = row.getBoundingClientRect().height;
+                row.style.height = `${startHeight}px`;
+                row.style.overflow = 'hidden';
+                row.style.transition = 'height 320ms ease, padding 320ms ease, box-shadow 320ms ease';
+                row.offsetHeight;
+
+                updateDom();
+
+                const endHeight = row.scrollHeight;
+                row.style.height = `${endHeight}px`;
+
+                window.setTimeout(() => {
+                    row.style.height = '';
+                    row.style.overflow = '';
+                    row.style.transition = '';
+                }, 340);
+            }
+
             function ensureDayOffControls() {
                 document.querySelectorAll('.gm_grid_row').forEach((row, dayIndex) => {
                     row.dataset.dayIndex = String(dayIndex);
@@ -1848,13 +1988,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (!label) return;
 
                     if (!label.querySelector('.gm_day_text')) {
-                        const dayText = label.textContent.trim();
+                        const dayText = dayFullNames[dayIndex] || label.textContent.trim();
                         label.textContent = '';
 
                         const text = document.createElement('span');
                         text.className = 'gm_day_text';
                         text.textContent = dayText;
                         label.appendChild(text);
+                    } else {
+                        const dayText = label.querySelector('.gm_day_text');
+                        dayText.textContent = dayFullNames[dayIndex] || dayText.textContent.trim();
                     }
 
                     if (!label.querySelector('.gm_day_off_btn')) {
@@ -1868,43 +2011,88 @@ document.addEventListener('DOMContentLoaded', () => {
                         label.appendChild(button);
                     }
 
+                    label.querySelector('.gm_scroll_hint_btn')?.remove();
+                    let hint = label.querySelector('.gm_scroll_hint_text');
+                    const nextDayName = dayFullNames[dayIndex + 1] || '';
+                    if (nextDayName) {
+                        if (!hint) {
+                            hint = document.createElement('span');
+                            hint.className = 'gm_scroll_hint_text';
+                            label.appendChild(hint);
+                        }
+                        hint.innerHTML = `
+                            <span>${nextDayName}</span>
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <path d="M5 12h13"></path>
+                                <path d="M13 6l6 6-6 6"></path>
+                            </svg>
+                        `;
+                    } else if (hint) {
+                        hint.remove();
+                    }
+
                     updateDayOffButton(row);
                 });
             }
 
             function setMenuDayOff(row, isOff, options = {}) {
                 const dayIndex = Number(row.dataset.dayIndex);
-                row.classList.toggle('day_off', isOff);
 
-                let note = row.querySelector('.gm_day_off_note');
-                if (isOff) {
-                    row.querySelectorAll('.gm_meal_card').forEach(card => card.remove());
-                    row.querySelectorAll('.gm_meal_col').forEach(col => {
-                        col.style.display = 'none';
-                    });
+                const updateDom = () => {
+                    row.classList.toggle('day_off', isOff);
 
-                    if (!note) {
-                        note = document.createElement('div');
-                        note.className = 'gm_day_off_note';
-                        row.appendChild(note);
-                    }
-                    note.textContent = 'День без готовки';
-                } else {
-                    if (note) note.remove();
+                    let note = row.querySelector('.gm_day_off_note');
+                    if (isOff) {
+                        row.querySelectorAll('.gm_meal_card').forEach(card => card.remove());
+                        row.querySelectorAll('.gm_meal_col').forEach(col => {
+                            col.style.display = 'none';
+                        });
 
-                    row.querySelectorAll('.gm_meal_col').forEach(col => {
-                        const mealIndex = Number(col.dataset.mealIndex);
-                        if (mealIndex >= settingsState.mealsPerDay) return;
-
-                        col.style.display = '';
-                        if (options.restoreRecipes && !col.querySelector('.gm_meal_card')) {
-                            const addButton = col.querySelector('.gm_add_dish_btn');
-                            col.insertBefore(createGeneratedMealCard(dayIndex, mealIndex), addButton || null);
+                        if (!note) {
+                            note = document.createElement('div');
+                            note.className = 'gm_day_off_note';
+                            row.appendChild(note);
                         }
-                    });
-                }
+                        note.innerHTML = `
+                            <div class="gm_day_off_card">
+                                <div class="gm_day_off_text">
+                                    <strong>День без готовки</strong>
+                                    <span>Рецепты на этот день убраны. Можно отдохнуть или вернуть меню одним нажатием.</span>
+                                </div>
+                                <button class="gm_day_off_restore" type="button">Вернуть рецепты</button>
+                            </div>
+                        `;
+                        note.querySelector('.gm_day_off_restore')?.addEventListener('click', (event) => {
+                            event.stopPropagation();
+                            settingsState.menuOffDays.delete(dayIndex);
+                            setMenuDayOff(row, false, { restoreRecipes: true, animate: true });
+                            applyNoCookDaysToMenu();
+                            syncMenuAfterRecipeChange();
+                        });
+                    } else {
+                        if (note) note.remove();
 
-                updateDayOffButton(row);
+                        row.querySelectorAll('.gm_meal_col').forEach(col => {
+                            const mealIndex = Number(col.dataset.mealIndex);
+                            if (mealIndex >= settingsState.mealsPerDay) return;
+
+                            col.style.display = '';
+                            if (options.restoreRecipes && !col.querySelector('.gm_meal_card')) {
+                                const addButton = col.querySelector('.gm_add_dish_btn');
+                                col.insertBefore(createGeneratedMealCard(dayIndex, mealIndex), addButton || null);
+                            }
+                        });
+                    }
+
+                    updateDayOffButton(row);
+                };
+
+                if (options.animate) {
+                    animateMenuRowHeight(row, updateDom);
+                } else {
+                    updateDom();
+                }
             }
 
             function applyMenuOffDaysToRows() {
@@ -1920,11 +2108,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 if (isOff) {
                     settingsState.menuOffDays.delete(dayIndex);
-                    setMenuDayOff(row, false, { restoreRecipes: true });
+                    setMenuDayOff(row, false, { restoreRecipes: true, animate: true });
                     applyNoCookDaysToMenu();
                 } else {
                     settingsState.menuOffDays.add(dayIndex);
-                    setMenuDayOff(row, true);
+                    setMenuDayOff(row, true, { animate: true });
                 }
 
                 syncMenuAfterRecipeChange();
@@ -1936,6 +2124,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 applyNoCookDaysToMenu();
                 applyMenuOffDaysToRows();
                 recalculateChartData();
+                updateDayNutritionSummaries();
                 updateMenuSummary();
                 if (chartContainer) renderChart(activeChartTab);
             }
@@ -1957,13 +2146,103 @@ document.addEventListener('DOMContentLoaded', () => {
                 chartTotalValue.innerText = formatRub(total);
             }
 
+            function renderKbjuSettings() {
+                syncKbjuSettingsFromMenu();
+                if (!chartContainer) return;
+
+                chartTitle.innerText = 'КБЖУ НА ДЕНЬ';
+                chartTotalLabel.innerText = 'Калории';
+                chartTotalValue.innerText = `${formatKbjuValue(kbjuSettings.calories, 'calories')} ккал`;
+                chartSection?.classList.add('kbju_mode');
+
+                const controls = [
+                    { key: 'calories', label: 'Калории', unit: 'ккал', min: 1200, max: Math.max(4500, kbjuSettings.calories + 300), step: 10, delta: 10 },
+                    { key: 'carbs', label: 'Углеводы', unit: 'г', min: 80, max: 700, step: 0.1, delta: 1 },
+                    { key: 'fat', label: 'Жиры', unit: 'г', min: 30, max: 220, step: 0.1, delta: 1 },
+                    { key: 'protein', label: 'Белки', unit: 'г', min: 40, max: 240, step: 0.1, delta: 1 }
+                ];
+
+                chartContainer.innerHTML = `
+                    <div class="sm_kbju_panel">
+                        <div class="sm_kbju_intro">Вы можете изменить либо калории, либо БЖУ. Они связаны по формуле:</div>
+                        <div class="sm_kbju_formula">
+                            <span>Калории =</span>
+                            <strong>(белки × 4) + (жиры × 9) + (углеводы × 4)</strong>
+                        </div>
+                        <div class="sm_kbju_lines">
+                            ${controls.map(control => {
+                                const value = Number(kbjuSettings[control.key]) || 0;
+                                const percent = Math.max(0, Math.min(100, ((value - control.min) / (control.max - control.min)) * 100));
+                                return `
+                                    <div class="sm_kbju_line" data-key="${control.key}">
+                                        <div class="sm_kbju_line_top">
+                                            <span class="sm_kbju_label">${control.label}</span>
+                                            <label class="sm_kbju_value">
+                                                <input class="sm_kbju_number" type="text" inputmode="decimal" autocomplete="off"
+                                                    value="${formatKbjuValue(value, control.key)}"
+                                                    aria-label="${control.label}">
+                                                <span>${control.unit}</span>
+                                                <svg class="sm_kbju_edit_icon" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                                                    stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                                    <path d="M12 20h9"></path>
+                                                    <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                                                </svg>
+                                            </label>
+                                        </div>
+                                        <div class="sm_kbju_control">
+                                            <button class="sm_kbju_step" type="button" data-action="minus" aria-label="Уменьшить ${control.label}">−</button>
+                                            <input class="sm_kbju_range" type="range" min="${control.min}" max="${control.max}" step="${control.step}" value="${value}" style="--kbju-progress:${percent}%">
+                                            <button class="sm_kbju_step" type="button" data-action="plus" aria-label="Увеличить ${control.label}">+</button>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                `;
+
+                chartContainer.querySelectorAll('.sm_kbju_line').forEach(row => {
+                    const key = row.dataset.key;
+                    const control = controls.find(item => item.key === key);
+                    const range = row.querySelector('.sm_kbju_range');
+                    const numberInput = row.querySelector('.sm_kbju_number');
+
+                    const commitNumberInput = () => {
+                        if (!numberInput.value.trim()) {
+                            numberInput.value = formatKbjuValue(Number(kbjuSettings[key]) || control.min, key);
+                            return;
+                        }
+                        setKbjuSettingValue(key, numberInput.value);
+                    };
+
+                    range?.addEventListener('change', () => setKbjuSettingValue(key, range.value));
+                    numberInput?.addEventListener('change', commitNumberInput);
+                    numberInput?.addEventListener('focus', () => numberInput.select());
+                    numberInput?.addEventListener('keydown', (e) => {
+                        if (e.key !== 'Enter') return;
+                        e.preventDefault();
+                        numberInput.blur();
+                    });
+                    row.querySelector('[data-action="minus"]')?.addEventListener('click', () => changeKbjuSettingValue(key, -control.delta));
+                    row.querySelector('[data-action="plus"]')?.addEventListener('click', () => changeKbjuSettingValue(key, control.delta));
+                });
+            }
+
             function renderChart(tabKey) {
+                if (tabKey === 'kbju') {
+                    activeChartTab = 'kbju';
+                    renderKbjuSettings();
+                    return;
+                }
+
                 activeChartTab = chartData[tabKey] ? tabKey : 'budget';
+                tabKey = activeChartTab;
                 recalculateChartData();
 
                 const data = chartData[tabKey];
                 if (!data) return;
 
+                chartSection?.classList.remove('kbju_mode');
                 chartTitle.innerText = data.title;
                 chartTotalLabel.innerText = data.totalLabel;
                 chartTotalValue.innerText = getChartTotalText(tabKey, data);
@@ -2162,7 +2441,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            // Логика выбора карточек (Опрос)
+            // Логика выбора карточек (опрос)
             function updateCuisineContinueState(forceActive = false) {
                 const hasSelected = document.querySelectorAll('.cuisine_card.selected').length > 0;
                 continueBtn1.classList.toggle('active', forceActive || hasSelected);
@@ -2280,7 +2559,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
             });
 
-            // --- ЛОГИКА ДОБАВЛЕНИЯ ТЕГОВ В МИНИ-ОПРОСЕ (ШАГ 2) ---
             const customInput = document.querySelector('.custom_exclude_input');
             const addCustomBtn = document.querySelector('.btn_add_custom');
             const customTagsWrap = document.getElementById('customExcludeTags');
@@ -2334,7 +2612,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 .filter(term => !surveyExcludePresetTerms.has(normalizePreferenceTerm(term)))
                 .forEach(term => addCustomExcludeTag(term, { silent: true }));
 
-            // --- ЛОГИКА ДОБАВЛЕНИЯ ТЕГОВ В НАСТРОЙКАХ (ИСКЛЮЧЕНИЯ) ---
             const smStopInput = document.querySelector('.sm_stop_input');
             const smStopAddBtn = document.querySelector('.sm_stop_add_btn');
             const smStopTagsWrap = document.querySelector('.sm_stop_tags');
@@ -2522,7 +2799,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             (readStoredPreferences().excludes || []).forEach(term => addSmStopTag(term, { silent: true }));
 
-            // Оживляем крестики у тегов, если они были в HTML по умолчанию
             document.querySelectorAll('.sm_stop_tag_remove').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     e.target.closest('.sm_stop_tag').remove();
@@ -2534,7 +2810,7 @@ document.addEventListener('DOMContentLoaded', () => {
             });
             refreshStopListEmptyState();
             renderStopSuggestions();
-            // --- ЛОГИКА КОРЗИНЫ ---
+            // логика корзины
             const slDrawer = document.getElementById('slDrawer');
             const slOverlay = document.getElementById('slOverlay');
             const slContent = document.getElementById('slContent') || document.querySelector('.sl_content');
@@ -2646,11 +2922,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 slContent.innerHTML = recipes.map((recipe, index) => `
                     <section class="sl_recipe_group">
                         <div class="sl_recipe_head">
-                            <div>
+                            <div class="sl_recipe_text">
                                 <div class="sl_recipe_meta">${escapeHtml(recipe.day)} · ${escapeHtml(recipe.label.toLowerCase())}${recipe.time ? ` · ${escapeHtml(recipe.time)}` : ''}</div>
                                 <div class="sl_recipe_title">${escapeHtml(recipe.title)}</div>
                             </div>
-                            <div class="sl_recipe_count">${recipe.ingredients.length}</div>
+                            <div class="sl_recipe_actions">
+                                <button class="sl_recipe_toggle" type="button" aria-label="Свернуть рецепт" aria-expanded="true">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m6 9 6 6 6-6"></path>
+                                    </svg>
+                                </button>
+                                <div class="sl_recipe_count">${recipe.ingredients.length}</div>
+                            </div>
                         </div>
                         <div class="sl_recipe_items">
                             ${recipe.ingredients.map((ingredient, ingredientIndex) => `
@@ -2667,14 +2951,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 `).join('');
             }
 
-            // Слушаем клик на "Собрать корзину"
-            document.getElementById('openChecklistBtn').addEventListener('click', () => {
+            function openChecklist() {
                 if (finalBuyBtn) {
                     updateMenuSummary();
                 }
                 renderRecipeCart();
                 slOverlay.style.display = 'block';
                 setTimeout(() => slDrawer.classList.add('active'), 10);
+            }
+
+            document.querySelectorAll('#openChecklistBtn').forEach((button) => {
+                button.addEventListener('click', openChecklist);
             });
 
             // Закрытие списка
@@ -2687,12 +2974,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Клик по товарам (галочки)
             slContent.addEventListener('click', (e) => {
+                const toggle = e.target.closest('.sl_recipe_toggle');
+                if (toggle) {
+                    const group = toggle.closest('.sl_recipe_group');
+                    if (!group) return;
+                    const isCollapsed = group.classList.toggle('collapsed');
+                    toggle.setAttribute('aria-expanded', String(!isCollapsed));
+                    toggle.setAttribute('aria-label', isCollapsed ? 'Развернуть рецепт' : 'Свернуть рецепт');
+                    return;
+                }
+
                 const item = e.target.closest('.sl_item');
                 if (!item) return;
                 item.classList.toggle('checked');
             });
 
-            // Финальная покупка
             document.getElementById('btnFinalBuy').addEventListener('click', function () {
                 const priceText = this.querySelector('.btn_final_price')?.innerText || '';
                 this.classList.remove('is_success');

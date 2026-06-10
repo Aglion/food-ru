@@ -36,11 +36,15 @@
         property="og:description">
     <meta content="25" name="next-head-count">
     <link crossorigin="anonymous" data-next-font="" href="/" rel="preconnect">
-    <link as="style" href="https://static.static-food-2.ru/_next/static/css/6ad1d24a9bfe6167.css" rel="preload">
-    <link data-n-g="" href="https://static.static-food-2.ru/_next/static/css/6ad1d24a9bfe6167.css" rel="stylesheet">
-    <link as="style" href="https://static.static-food-2.ru/_next/static/css/ddaa0e7363be05ac.css" rel="preload">
-    <link data-n-p="" href="https://static.static-food-2.ru/_next/static/css/ddaa0e7363be05ac.css" rel="stylesheet">
-    <link href="styles.css" rel="stylesheet">
+    <link href="vendor-css/c8aa9ad6ec08b4fb.css" rel="stylesheet">
+    <link href="vendor-css/45c4b37348ff68e2.css" rel="stylesheet">
+    <link href="vendor-css/74f502e260f9824d.css" rel="stylesheet">
+    <link href="vendor-css/014af883a837cf35.css" rel="stylesheet">
+    <link href="vendor-css/98837f17097ac3fe.css" rel="stylesheet">
+    <link href="vendor-css/5ebf229aefcbaddf.css" rel="stylesheet">
+    <link href="vendor-css/35af84b82b44220b.css" rel="stylesheet">
+    <link href="vendor-css/77d077a5c9fbe980.css" rel="stylesheet">
+    <link href="styles.css?v=20260609-header-fullbleed-fix" rel="stylesheet">
 
     <noscript data-n-css=""></noscript>
 </head>
@@ -496,17 +500,18 @@
                                     </div>
                                 </div>
                                 <div class="section_category__JfXE0">
-                                    <div aria-label="Умный помощник"
-                                        class="categoryHeader_wrapper__xLYXt oneTieredCategory_category__iVNIM categoryHeader_withBadge__P_Q_d"
+                                    <div aria-label="Меню на неделю"
+                                        class="categoryHeader_wrapper__xLYXt oneTieredCategory_category__iVNIM weeklyMenu_navHeader"
                                         role="group">
                                         <div class="categoryHeader_titleWithBadge___mHtI"><a
-                                                class="categoryHeader_title__jr4F0" href="/avoka-bot">
-                                                <div class="categoryHeader_icon__Fj2vZ"
-                                                    style="background-image:url(https://cdn.food.ru/unsigned/fit/150/150/ce/0/czM6Ly9tZWRpYS9waWN0dXJlcy9zdGF0aWMvYXZva2Ffc2lkZV9tZW51LnBuZw.png)">
+                                                aria-current="page"
+                                                class="categoryHeader_title__jr4F0 weeklyMenu_navLink"
+                                                href="/menu-na-nedelu">
+                                                <div class="categoryHeader_icon__Fj2vZ weeklyMenu_navIcon"
+                                                    style="background-image:url(photos/menu-week-icon.svg)">
                                                 </div>
-                                                Умный помощник
+                                                Меню на неделю
                                             </a>
-                                            <div class="badge_badge__emaGo badge_new__hMT5r" role="status">новое</div>
                                         </div>
                                     </div>
                                 </div>
@@ -560,10 +565,10 @@
                                                 </div>
                                                 Полезные сервисы
                                             </a></div>
-                                        <button aria-controls=":R12m3cm:" aria-expanded="true"
+                                        <button aria-controls=":R12m3cm:" aria-expanded="false"
                                             aria-label="Полезные сервисы" class="categoryHeader_button__nGpLJ"
                                             id="ctrl_:R12m3cm:" type="button">
-                                            <svg class="categoryHeader_chevron__oVH4O categoryHeader_chevron_opened__HddAx"
+                                            <svg class="categoryHeader_chevron__oVH4O"
                                                 fill="none" role="presentation" viewBox="0 0 12 12"
                                                 xmlns="http://www.w3.org/2000/svg">
                                                 <path d="m1 4 4.293 4.293a1 1 0 0 0 1.414 0L11 4" stroke="#241F20"
@@ -571,11 +576,9 @@
                                             </svg>
                                         </button>
                                     </div>
-                                    <div aria-hidden="false" aria-labelledby="ctrl_:R12m3cm:"
-                                        class="twoTieredCategory_subCategoriesWrapper__0Zehg" id=":R12m3cm:"
+                                    <div aria-hidden="true" aria-labelledby="ctrl_:R12m3cm:"
+                                        class="twoTieredCategory_subCategoriesWrapper__0Zehg twoTieredCategory_hidenSubCategoriesWrapper__Z0sym" id=":R12m3cm:"
                                         role="region"><a
-                                            class="oneTieredSubCategory_link__SLHDO twoTieredCategory_subCategory__m5j8T twoTieredCategory_active__CTavN"
-                                            href="/menu-na-nedelu">Меню на неделю</a><a
                                             class="oneTieredSubCategory_link__SLHDO twoTieredCategory_subCategory__m5j8T"
                                             href="/kalkulyator-kalorii">Калькулятор калорий</a><a
                                             class="oneTieredSubCategory_link__SLHDO twoTieredCategory_subCategory__m5j8T"
@@ -1106,8 +1109,6 @@
                 <div class="grid_col__GAj_L new_main_content_col">
 
 
-                    <!-- Кнопка корзины теперь внутри сгенерированного меню -->
-
                     <!-- Панель списка покупок -->
                     <div class="sl_overlay" id="slOverlay"></div>
                     <div class="sl_drawer" id="slDrawer">
@@ -1367,14 +1368,12 @@
                     </div>
 
 
-                    <!-- ШАГ АВТОРИЗАЦИИ X5ID -->
+                    <!-- шаг авторизации -->
                     <div id="x5idAuthWrapper">
                         <div class="auth-content">
-                            <!-- Железобетонная шапка -->
                             <div class="content-header"
                                 style="position: relative; display: flex; justify-content: center; align-items: center; margin-bottom: 32px;">
 
-                                <!-- Логотип (добавлен flex-shrink: 0 чтобы не плющился) -->
                                 <svg width="116" height="32" viewBox="0 0 116 32" style="flex-shrink: 0;" fill="none"
                                     xmlns="http://www.w3.org/2000/svg">
                                     <path
@@ -1395,7 +1394,6 @@
                                         fill="#251F20" />
                                 </svg>
 
-                                <!-- Крестик (добавлено абсолютное позиционирование) -->
                                 <div id="close-x5-button"
                                     style="position: absolute; right: 0; top: 50%; transform: translateY(-50%); cursor: pointer; display: flex; align-items: center; justify-content: center; width: 32px; height: 32px;">
                                     <svg width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -1439,7 +1437,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- КОНЕЦ ШАГА АВТОРИЗАЦИИ X5ID -->
 
                     <div class="profile_page_wrapper" id="profilePage" style="display: none;">
                         <section class="profile_hero">
@@ -1505,7 +1502,6 @@
                     </div>
 
                     <div class="generated_menu_wrapper">
-                        <!-- Hero Banner -->
                         <div class="gm_banner">
                             <img src="photos/banner_salad_1777400127315.png" alt="Меню на неделю">
                             <div class="gm_banner_content">
@@ -1514,22 +1510,13 @@
                             </div>
                         </div>
 
-                        <!-- Description -->
                         <div class="gm_description">
                             Мы собрали для вас разнообразное и полезное меню на неделю. Подстройте его под себя —
                             замените блюда, исключите ненужные продукты или поставьте день без готовки.
                         </div>
 
-                        <!-- Блок УСПЕХА (Скрыт по умолчанию) -->
                         <div class="gm_info_box" id="gmInfoBox" style="display: none;">
                             <div class="gm_info_text">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#398829"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                    style="flex-shrink: 0;">
-                                    <path
-                                        d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3">
-                                    </path>
-                                </svg>
                                 <div class="gm_info_text_inner">
                                     <h3>Меню персонализировано</h3>
                                     <p>На основе ваших предпочтений.<br>Можно уточнить в любой момент.</p>
@@ -1539,25 +1526,16 @@
                         </div>
 
                         <div class="gm_save_prefs_box" id="gmSavePrefsBox" style="display: none;">
-                            <div class="gm_save_prefs_icon">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
-                                    <polyline points="17 21 17 13 7 13 7 21"></polyline>
-                                    <polyline points="7 3 7 8 15 8"></polyline>
-                                </svg>
-                            </div>
+                            <button class="gm_save_prefs_close" id="savePrefsLaterBtn" type="button" aria-label="Скрыть блок">×</button>
                             <div class="gm_save_prefs_content">
                                 <div class="gm_save_prefs_title">Пока сохранено на этом устройстве</div>
                                 <p class="gm_save_prefs_desc">Войдите, чтобы не потерять предпочтения и использовать их в следующем меню.</p>
                             </div>
                             <div class="gm_save_prefs_actions">
                                 <button class="gm_save_prefs_primary" id="savePrefsLoginBtn" type="button">Сохранить в профиле</button>
-                                <button class="gm_save_prefs_secondary" id="savePrefsLaterBtn" type="button">Позже</button>
                             </div>
                         </div>
 
-                        <!-- Блок МИНИ-ОПРОСА (Показывается неавторизованным/непрошедшим) -->
                         <div class="mini_survey_block" id="gmMiniSurveyBlock">
                             <div class="mini_survey_content">
                                 <div class="mini_survey_title">Подберём меню под вас за 30 секунд</div>
@@ -1567,7 +1545,6 @@
                             <button class="btn_take_survey" id="openSurveyFromGmBtn">Пройти</button>
                         </div>
 
-                        <!-- Presets -->
                         <div class="gm_presets_row">
                             <div class="gm_presets_wrapper">
                                 <button class="gm_preset_btn foryou" id="gmPresetForYou" style="display: none;">
@@ -1609,7 +1586,6 @@
                             </button>
                         </div>
 
-                        <!-- Grid -->
                         <div class="gm_grid_wrapper">
                             <div class="gm_grid_header">
                                 <div></div>
@@ -1618,7 +1594,6 @@
                                 <div>УЖИН</div>
                             </div>
 
-                            <!-- Row 1: Mon -->
                             <div class="gm_grid_row">
                                 <div class="gm_day_label">Пн</div>
                                 <div class="gm_meal_card" data-kcal="120" data-prot="4" data-fat="2" data-carb="22">
@@ -1704,7 +1679,6 @@
                                 </div>
                             </div>
 
-                            <!-- Row 2: Tue -->
                             <div class="gm_grid_row">
                                 <div class="gm_day_label">Вт</div>
                                 <div class="gm_meal_card">
@@ -1769,7 +1743,6 @@
                                 </div>
                             </div>
 
-                            <!-- Row 3: Wed -->
                             <div class="gm_grid_row">
                                 <div class="gm_day_label">Ср</div>
                                 <div class="gm_meal_card">
@@ -1838,7 +1811,6 @@
                             </div>
 
                             <div class="gm_extra_rows">
-                                <!-- Row 4: Thu -->
                                 <div class="gm_grid_row">
                                     <div class="gm_day_label">Чт</div>
                                     <div class="gm_meal_card">
@@ -1908,7 +1880,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Row 5: Fri -->
                                 <div class="gm_grid_row">
                                     <div class="gm_day_label">Пт</div>
                                     <div class="gm_meal_card">
@@ -1978,7 +1949,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Row 6: Sat -->
                                 <div class="gm_grid_row">
                                     <div class="gm_day_label">Сб</div>
                                     <div class="gm_meal_card">
@@ -2043,7 +2013,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Row 7: Sun -->
                                 <div class="gm_grid_row">
                                     <div class="gm_day_label">Вс</div>
                                     <div class="gm_meal_card">
@@ -2122,16 +2091,6 @@
                             </div>
                         </div>
 
-                        <!-- Плавающая кнопка корзины (FAB) -->
-                        <div class="fab_cart" id="openChecklistBtn">
-                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="9" cy="21" r="1"></circle>
-                                <circle cx="20" cy="21" r="1"></circle>
-                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                            </svg>
-                            <div class="fab_cart_badge">4 250 ₽</div>
-                        </div>
                     </div>
 
                     <div class="settings_menu_wrapper">
@@ -2148,12 +2107,12 @@
                             <div class="sm_chart_tabs">
                                 <div class="chart_tab_btn active" data-tab="budget">💰 Бюджет</div>
                                 <div class="chart_tab_btn" data-tab="calories">🔥 Калории</div>
+                                <div class="chart_tab_btn" data-tab="kbju">КБЖУ</div>
                                 <div class="chart_tab_btn" data-tab="protein">🥩 Белок</div>
                                 <div class="chart_tab_btn" data-tab="time">⏱️ Время</div>
                             </div>
 
                             <div class="sm_chart_container" id="smChartContainer">
-                                <!-- Bars rendered by JS -->
                             </div>
 
                             <div class="sm_chart_legend">
@@ -2185,7 +2144,6 @@
 
                         <div class="sm_section_title">Исключения</div>
                         <div class="sm_stop_tags">
-                            <!-- По дефолту пусто -->
                         </div>
                         <div class="sm_stop_input_row">
                             <input type="text" class="sm_stop_input" placeholder="Введите продукт...">
