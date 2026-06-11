@@ -99,6 +99,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     region.setAttribute('aria-hidden', String(!isOpen));
                     region.classList.toggle('twoTieredCategory_hidenSubCategoriesWrapper__Z0sym', !isOpen);
                     region.classList.toggle('threeTieredCategory_hidenSubCategoriesWrapper__9XuhU', !isOpen);
+                    region.style.setProperty('display', isOpen ? 'block' : 'none', 'important');
                     if (chevron) chevron.classList.toggle('categoryHeader_chevron_opened__HddAx', isOpen);
                 }
 
@@ -1022,18 +1023,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             restoreSurveySelectionsFromStorage();
 
-            const storedPreferencesOnStart = readStoredPreferences();
-            const hasCompletedSurveyOnStart = false;
-
-            if (storedPreferencesOnStart.surveyCompleted) {
-                try {
-                    localStorage.setItem(preferencesStorageKey, JSON.stringify({
-                        ...storedPreferencesOnStart,
-                        surveyCompleted: false
-                    }));
-                } catch (error) {
-                }
+            function hasCompletedSurvey() {
+                return Boolean(readStoredPreferences().surveyCompleted);
             }
+
+            const storedPreferencesOnStart = readStoredPreferences();
+            const hasCompletedSurveyOnStart = Boolean(storedPreferencesOnStart.surveyCompleted);
+            const isProfileLoggedIn = localStorage.getItem(profileAuthStorageKey) === 'true';
 
             surveyStep1.style.display = 'none';
             surveyStep2.style.display = 'none';
@@ -1042,10 +1038,15 @@ document.addEventListener('DOMContentLoaded', () => {
             generatedMenu.style.display = 'block';
             if (gmInfoBox) gmInfoBox.style.display = hasCompletedSurveyOnStart ? 'flex' : 'none';
             if (gmMiniSurveyBlock) gmMiniSurveyBlock.style.display = hasCompletedSurveyOnStart ? 'none' : 'grid';
-            if (gmSavePrefsBox) gmSavePrefsBox.style.display = 'none';
+            if (gmSavePrefsBox) gmSavePrefsBox.style.display = hasCompletedSurveyOnStart && !isProfileLoggedIn ? 'flex' : 'none';
             if (profilePage) profilePage.style.display = 'none';
 
+            function setSurveyFlowOpen(isOpen) {
+                document.body.classList.toggle('survey_flow_open', Boolean(isOpen));
+            }
+
             function openSettingsModal() {
+                setSurveyFlowOpen(false);
                 settingsMenu.style.display = 'block';
                 document.body.style.overflow = 'hidden';
             }
@@ -1063,6 +1064,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             function showProfilePage() {
                 if (!profilePage) return;
+                setSurveyFlowOpen(false);
                 generatedMenu.style.display = 'none';
                 surveyStep1.style.display = 'none';
                 surveyStep2.style.display = 'none';
@@ -1072,6 +1074,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             function showMenuPage() {
+                setSurveyFlowOpen(false);
                 if (profilePage) profilePage.style.display = 'none';
                 surveyStep1.style.display = 'none';
                 surveyStep2.style.display = 'none';
@@ -1080,12 +1083,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
-            const isProfileLoggedIn = localStorage.getItem(profileAuthStorageKey) === 'true';
             setHeaderLoggedIn(isProfileLoggedIn);
             if (isProfileLoggedIn) showProfilePage();
 
             function showSavePrefsPrompt() {
-                if (gmSavePrefsBox) gmSavePrefsBox.style.display = 'flex';
+                if (!gmSavePrefsBox) return;
+
+                if (!hasCompletedSurvey() || localStorage.getItem(profileAuthStorageKey) === 'true') {
+                    hideSavePrefsPrompt();
+                    return;
+                }
+
+                gmSavePrefsBox.style.display = 'flex';
             }
 
             function hideSavePrefsPrompt() {
@@ -1101,6 +1110,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             function openSurveyFlow(event) {
                 if (event) event.preventDefault();
+                setSurveyFlowOpen(true);
                 generatedMenu.style.display = 'none';
                 surveyStep2.style.display = 'none';
                 surveyStep1.style.display = 'block';
@@ -1131,17 +1141,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             backBtn1.addEventListener('click', () => {
+                setSurveyFlowOpen(false);
                 surveyStep1.style.display = 'none';
                 generatedMenu.style.display = 'block';
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
 
             continueBtn1.addEventListener('click', () => {
+                setSurveyFlowOpen(true);
                 surveyStep1.style.display = 'none';
                 surveyStep2.style.display = 'block';
             });
 
             backBtn2.addEventListener('click', () => {
+                setSurveyFlowOpen(true);
                 surveyStep2.style.display = 'none';
                 surveyStep1.style.display = 'block';
             });
@@ -1176,6 +1189,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Кнопка завершения опроса
             finishBtn.addEventListener('click', () => {
+                setSurveyFlowOpen(false);
                 surveyStep2.style.display = 'none';
                 syncSurveyExcludesToSettings();
                 savePreferenceState({
@@ -2463,6 +2477,7 @@ document.addEventListener('DOMContentLoaded', () => {
             cards1.forEach(card => {
                 card.addEventListener('click', () => {
                     if (suppressCuisineClick) return;
+                    if (document.getElementById('cuisineGrid')?.classList.contains('tinder_mode')) return;
                     card.classList.toggle('selected');
                     updateCuisineContinueState();
                     savePreferenceState();
@@ -2478,8 +2493,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 let startX = 0;
                 let currentX = 0;
                 let isDragging = false;
+                const hint = document.createElement('div');
+                hint.className = 'tinder_hint';
+                hint.innerHTML = '<span>← не нравится</span><strong>Смахните карточку</strong><span>нравится →</span>';
                 const counter = document.createElement('div');
                 counter.className = 'tinder_counter';
+                cuisineGrid.before(hint);
                 cuisineGrid.after(counter);
                 cuisineGrid.classList.add('tinder_mode');
 

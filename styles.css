@@ -3516,13 +3516,13 @@ body {
     }
 
     .cuisine_grid.tinder_mode .cuisine_card.swipe_like::before {
-        content: "НРАВИТСЯ";
+        content: "Нравится";
         background: #398829;
         opacity: 1;
     }
 
     .cuisine_grid.tinder_mode .cuisine_card.swipe_nope::before {
-        content: "НЕ ЕМ";
+        content: "Не нравится";
         background: #C0392B;
         opacity: 1;
     }
@@ -4511,7 +4511,6 @@ canvas {
 
 @media (max-width: 900px) {
     .gm_save_prefs_box {
-        display: flex !important;
         flex-direction: column !important;
         align-items: stretch !important;
         gap: 16px !important;
@@ -7106,5 +7105,216 @@ body::-webkit-scrollbar-thumb {
         margin-left: 0 !important;
         margin-right: 0 !important;
         box-sizing: border-box !important;
+    }
+}
+
+body.survey_flow_open .fab_cart {
+    display: none !important;
+}
+
+@media (max-width: 767px) {
+    .sm_chart_tabs {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+        margin-left: 0;
+        margin-right: 0;
+        padding: 2px 0 10px;
+        overflow-x: visible;
+    }
+
+    .chart_tab_btn {
+        flex: initial;
+        min-width: 0;
+        min-height: 44px;
+        padding: 10px 12px;
+        border-radius: 999px;
+        font-size: 15px;
+        line-height: 1;
+        justify-content: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    body.survey_flow_open .new_main_content_col {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+    }
+
+    body.survey_flow_open .header_sticky__N4sZ3 {
+        display: none !important;
+    }
+
+    body.survey_flow_open .survey_step_wrapper,
+    body.survey_flow_open .survey_step_2_wrapper {
+        width: 100vw !important;
+        max-width: 100vw !important;
+        min-height: 100dvh;
+        margin: 0 auto !important;
+        padding: 18px clamp(18px, 5vw, 32px) calc(92px + env(safe-area-inset-bottom));
+        border-radius: 0;
+        box-sizing: border-box;
+    }
+
+    body.survey_flow_open .survey_header {
+        gap: 16px;
+        margin-bottom: clamp(22px, 4dvh, 34px);
+    }
+
+    body.survey_flow_open .survey_title_row {
+        gap: 14px;
+        margin-bottom: clamp(18px, 3dvh, 28px);
+    }
+
+    body.survey_flow_open .survey_search_wrap {
+        width: 100%;
+        max-width: min(100%, 560px);
+    }
+
+    body.survey_flow_open .tinder_hint {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 8px;
+        width: 100%;
+        max-width: min(100%, 560px);
+        margin: 0 auto 12px;
+        color: #8B8B8B;
+        font-size: 12px;
+        line-height: 1.2;
+    }
+
+    body.survey_flow_open .tinder_hint strong {
+        color: #666;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    body.survey_flow_open .tinder_hint span:last-child {
+        color: #398829;
+        text-align: right;
+    }
+
+    body.survey_flow_open .tinder_hint span:first-child {
+        color: #C0392B;
+    }
+
+    body.survey_flow_open .cuisine_grid.tinder_mode {
+        width: 100%;
+        max-width: min(100%, 560px);
+        height: clamp(340px, 48dvh, 500px);
+        margin: 0 auto 12px;
+    }
+
+    body.survey_flow_open .cuisine_grid.tinder_mode .cuisine_card {
+        align-items: center;
+        justify-content: center;
+        padding: clamp(24px, 7vw, 44px);
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+    body.survey_flow_open .cuisine_grid.tinder_mode .cuisine_card::before {
+        top: 50%;
+        left: 50%;
+        z-index: 4;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 156px;
+        min-height: 48px;
+        padding: 0 22px;
+        border-radius: 999px;
+        color: #fff;
+        font-size: 17px;
+        font-weight: 700;
+        line-height: 1;
+        box-shadow: 0 12px 28px rgba(36, 31, 32, 0.18);
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+    }
+
+    body.survey_flow_open .cuisine_grid.tinder_mode .cuisine_card.active {
+        display: grid;
+        grid-template-rows: minmax(0, 1fr) auto;
+        place-items: center;
+        row-gap: 24px;
+    }
+
+    body.survey_flow_open .cuisine_grid.tinder_mode .cuisine_card img {
+        width: min(64vw, 330px);
+        height: auto;
+        max-height: min(32dvh, 300px);
+        margin: 0;
+        object-fit: cover;
+    }
+
+    body.survey_flow_open .cuisine_grid.tinder_mode .cuisine_card_title {
+        margin: 0;
+        font-size: clamp(30px, 9vw, 44px);
+        line-height: 1.08;
+    }
+
+    body.survey_flow_open .tinder_counter {
+        text-align: center;
+        margin: 12px auto 14px;
+        font-size: 18px;
+    }
+
+    body.survey_flow_open .survey_step_wrapper .survey_footer {
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1200;
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        max-width: none;
+        margin: 0;
+        padding: 12px clamp(18px, 5vw, 32px) calc(10px + env(safe-area-inset-bottom));
+        background: linear-gradient(180deg, rgba(255, 255, 255, 0), #fff 28%);
+        box-sizing: border-box;
+    }
+
+    body.survey_flow_open .survey_step_wrapper .btn_survey_continue {
+        flex: 0 1 560px;
+        width: 100%;
+        border-radius: 16px;
+    }
+
+    body.survey_flow_open .custom_exclude_wrap {
+        padding: 16px;
+    }
+
+    body.survey_flow_open .custom_exclude_input_row {
+        gap: 8px;
+    }
+
+    body.survey_flow_open .custom_exclude_input {
+        min-width: 0;
+        padding: 13px 14px;
+    }
+
+    body.survey_flow_open .btn_add_custom {
+        flex: 0 0 48px;
+        width: 48px;
+        min-width: 48px;
+        height: 48px;
+        padding: 0;
+        border-color: #e53935;
+        border-radius: 14px;
+        color: #e53935;
+        font-size: 0;
+        line-height: 1;
+    }
+
+    body.survey_flow_open .btn_add_custom::before {
+        content: "+";
+        font-size: 24px;
+        font-weight: 500;
     }
 }
